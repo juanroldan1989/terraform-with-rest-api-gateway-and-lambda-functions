@@ -1,0 +1,3 @@
+.DS_Store
+terraform/.terraform
+terraform/hello/node_modules
