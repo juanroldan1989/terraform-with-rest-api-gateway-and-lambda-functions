@@ -1,0 +1,161 @@
+name: "CI/CD Pipeline"
+
+on:
+  push:
+    paths:
+      - "terraform/**"
+      - ".github/workflows/**"
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  linting:
+    name: "Lambda Functions - Linting"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+
+      - name: "[Hello Lambda Function] Install Dependencies & Run Linters"
+        working-directory: terraform/hello
+        run: |
+          npm ci
+          npx eslint function.js
+
+  unit_tests:
+    name: "Lambda Functions - Testing"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+
+      - name: "[Hello Lambda Function] Install Dependencies & Run Tests"
+        working-directory: terraform/hello
+        run: |
+          npm ci
+          npm run test tests/
+
+  deployment:
+    needs: [linting, unit_tests]
+    if: "contains(github.event.head_commit.message, '[deploy]')"
+    name: "Deploy (Terraform -> AWS)"
+    runs-on: ubuntu-latest
+    outputs:
+      api_base_url: ${{steps.options.outputs.api_base_url}}
+      bucket_name: ${{steps.options.outputs.bucket_name}}
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          # terraform_version: 0.13.0:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+          terraform_wrapper: false
+
+      - name: Terraform Format
+        working-directory: terraform
+        run: terraform fmt -check
+
+      - name: Terraform Init
+        working-directory: terraform
+        run: terraform init
+
+      - name: Terraform Validate
+        working-directory: terraform
+        run: terraform validate -no-color
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        working-directory: terraform
+        run: terraform apply -auto-approve -input=false
+
+      - name: Set Step's Output with `api_base_url_production` value from <terraform output>
+        id: api_base_url_step
+        working-directory: terraform
+        run: |
+          api_base_url=$(terraform output -raw api_base_url_production)
+          echo $api_base_url
+          echo "::set-output name=value::${api_base_url}"
+
+      - name: Set Step's Output with `bucket_name` value from <terraform output>
+        id: bucket_name_step
+        working-directory: terraform
+        run: |
+          bucket_name=$(terraform output -raw test_s3_bucket)
+          echo $bucket_name
+          echo "::set-output name=value::${bucket_name}"
+
+      - name: Set Job's Output with `api_base_url` & `bucket_name` values
+        uses: actions/github-script@v5
+        id: options
+        with:
+          script: |
+            console.log('*** api_base_url:', '${{steps.api_base_url_step.outputs.value}}');
+            console.log('*** bucket_name:', '${{steps.bucket_name_step.outputs.value}}');
+            core.setOutput('api_base_url', '${{steps.api_base_url_step.outputs.value}}');
+            core.setOutput('bucket_name', '${{steps.bucket_name_step.outputs.value}}');
+
+  integration_tests:
+    needs: deployment
+    name: "API Testing"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v3
+
+      - name: Hello Endpoint
+        working-directory: terraform/hello/tests
+        run: |
+          api_base_url="${{ needs.deployment.outputs.api_base_url }}"
+          echo $api_base_url
+          bash integration.test.sh $api_base_url
+
+  # TODO: VERSIONING
+  # load_tests:
+  # - validate rate limiting behavior
+  #     -> To avoid API endpoints quota abuse on users
+  #     -> Validate API Key usage (implement - TODO)
+  #       -> Lambda authorizers:
+  #         -> use lambda to validate a bearer token (OAuth)
+  #         -> or request parameters and grant access
+  #     -> Rate limit API Key users to 10 requests per second
+  #
+  # - validate caching implementation on API Endpoints
+  #     -> (for S3 function -> bucket/object combination queried multiple times)
+  #     -> (for DynamoDB function -> super_name, person_name queried multiple times)
+
+  # send-notification:
+  #   runs-on: [ubuntu-latest]
+  #   timeout-minutes: 7200
+  #   needs: [linting, unit_tests, deployment, integration_tests]
+  #   if: ${{ always() }}
+  #   steps:
+  #     - name: Send Slack Notification
+  #       uses: rtCamp/action-slack-notify@v2
+  #       if: always()
+  #       env:
+  #         SLACK_CHANNEL: devops-sample-slack-channel
+  #         SLACK_COLOR: ${{ job.status }}
+  #         SLACK_ICON: https://avatars.githubusercontent.com/u/54465427?v=4
+  #         SLACK_MESSAGE: |
+  #           "Lambda Functions - Linting: ${{ needs.linting.outputs.status }}" \
+  #           "Lambda Functions - Unit Tests: ${{ needs.unit_tests.outputs.status }}" \
+  #           "API Deployment: ${{ needs.deployment.outputs.status }}" \
+  #           "API Tests: ${{ needs.integration_tests.outputs.status || 'Not Performed' }}" \
+  #           "API Load Tests: ${{ needs.load_tests.outputs.status || 'Not Performed' }}"
+  #         SLACK_TITLE: CI/CD Pipeline Results
+  #         SLACK_USERNAME: Github Actions Bot
+  #         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
