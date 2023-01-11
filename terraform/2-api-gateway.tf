@@ -6,7 +6,7 @@ resource "aws_rest_api_stage" "staging" {
   api_id = aws_apigatewayv2_api.main.id
 
   name        = "staging"
-  auto_deploy = true # updates to API automatically trigger a new deployment
+  auto_deploy = true
 
   access_log_settings {
     destination_arn = aws_cloudwatch_log_group.main_api_gw.arn
@@ -31,7 +31,7 @@ resource "aws_apigatewayv2_stage" "production" {
   api_id = aws_apigatewayv2_api.main.id
 
   name        = "production"
-  auto_deploy = true # updates to API automatically trigger a new deployment
+  auto_deploy = true
 
   access_log_settings {
     destination_arn = aws_cloudwatch_log_group.main_api_gw.arn
