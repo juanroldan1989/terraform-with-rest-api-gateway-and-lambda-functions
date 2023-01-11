@@ -5,6 +5,7 @@
 - Rate Limits
 - Throttle Configuration
 - Deployment through Github Actions -> Terraform -> AWS
+- API Versioning through URI path. Another alternatives: https://www.xmatters.com/blog/blog-four-rest-api-versioning-strategies/
 
 ## REST APIs vs HTTP APIs
 
