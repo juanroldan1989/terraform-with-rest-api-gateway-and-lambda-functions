@@ -71,3 +71,61 @@ https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lamb
 - https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/api_gateway_stage
 
 - Manages an API Gateway Stage. A stage is a named reference to a deployment, which can be done via the `aws_api_gateway_deployment` resource.
+
+## REST API Gateway - ROOT Path
+
+Authorization logic applied through `Lambda Authorizer` function:
+
+```ruby
+% curl https://8ts578vs23.execute-api.us-east-1.amazonaws.com/production
+
+{ "message" : "Missing Authentication Token" }
+```
+
+## REST API Gateway - Hello Endpoint (public)
+
+```ruby
+# 3-rest-api-gateway-integration-hello-lambda.tf
+...
+
+resource "aws_api_gateway_method" "hello_method" {
+  rest_api_id   = aws_api_gateway_rest_api.main.id
+  resource_id   = aws_api_gateway_resource.hello_resource.id
+  http_method   = "GET"
+  authorization = "NONE"
+}
+```
+
+```ruby
+curl https://8ts578vs23.execute-api.us-east-1.amazonaws.com/production/hello
+
+{ "message" : "Hello, world!" }
+```
+
+## REST API Gateway - Goodbye Endpoint (private)
+
+```ruby
+# 3-rest-api-gateway-integration-goodbye-lambda.tf
+...
+
+resource "aws_api_gateway_method" "hello_method" {
+  rest_api_id   = aws_api_gateway_rest_api.main.id
+  resource_id   = aws_api_gateway_resource.goodbye_resource.id
+  http_method   = "GET"
+  authorization = "CUSTOM"
+  authorizer_id = aws_api_gateway_authorizer.main.id
+}
+```
+
+```ruby
+$ curl https://8ts578vs23.execute-api.us-east-1.amazonaws.com/production/goodbye
+
+{ "message" : "Missing Authentication Token" }
+```
+
+```ruby
+$ curl https://8ts578vs23.execute-api.us-east-1.amazonaws.com/production/goodbye \
+-H "Authentication header: value"
+
+{ "message" : "Goodbye!" }
+```
