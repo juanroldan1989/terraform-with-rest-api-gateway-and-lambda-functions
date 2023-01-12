@@ -1,5 +1,10 @@
 .DS_Store
 terraform/.terraform
+
 terraform/authorizer.zip
+terraform/goodbye.zip
 terraform/hello.zip
+
+terraform/authorizer/node_modules
+terraform/goodbye/node_modules
 terraform/hello/node_modules

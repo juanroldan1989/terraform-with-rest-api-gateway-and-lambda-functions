@@ -8,7 +8,7 @@ resource "aws_api_gateway_method" "hello_method" {
   rest_api_id   = aws_api_gateway_rest_api.main.id
   resource_id   = aws_api_gateway_resource.hello_resource.id
   http_method   = "GET"
-  authorization = "NONE" # TODO: To be adjusted with Lambda Authorizer reference
+  authorization = "NONE"
 }
 
 resource "aws_api_gateway_integration" "hello_integration" {
