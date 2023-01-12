@@ -23,6 +23,18 @@
 
 ## REST API implementation through Terraform
 
+- Reference: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/api_gateway_rest_api
+
+- Resource: `aws_api_gateway_rest_api`
+
+- Manages an API Gateway REST API.
+
+- The REST API can be configured via importing an OpenAPI specification in the `body` argument (with other arguments serving as overrides) OR
+
+- via other `Terraform resources` to manage the resources (`aws_api_gateway_resource` resource), methods (`aws_api_gateway_method` resource), integrations (`aws_api_gateway_integration` resource), etc. of the REST API.
+
+- Once the `REST API` is configured, the `aws_api_gateway_deployment` resource can be used along with the `aws_api_gateway_stage` resource to **publish the REST API.**
+
 - With a REST API we can apply **Usage Plans, Rate Limits and Throttle Configuration.**
 
 https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/apigatewayv2_api
@@ -48,8 +60,14 @@ https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lamb
 
 - When a client makes a request to one of your API's methods, API Gateway calls your Lambda authorizer, which takes the caller's identity as input and returns an IAM policy as output.
 
-## Testing Lambda Authorizer (Console)
+### Testing Lambda Authorizer (Console)
 
 <img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/1.png" width="100%" />
 
 <img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/2.png" width="100%" />
+
+## REST API Gateway - Stage
+
+- https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/api_gateway_stage
+
+- Manages an API Gateway Stage. A stage is a named reference to a deployment, which can be done via the `aws_api_gateway_deployment` resource.
