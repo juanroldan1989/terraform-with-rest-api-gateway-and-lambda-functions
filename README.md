@@ -1,9 +1,10 @@
 # REST API Gateway
 
-- Routes integration with Lambda Functions
-- Usage Plans
-- Rate Limits
-- Throttle Configuration
+- Routes integration with Lambda Functions.
+- Usage Plans.
+- Rate Limits.
+- API Load Testing.
+- Throttle Configuration.
 - Deployment through Github Actions -> Terraform -> AWS
 - API Versioning through URI path. Another alternatives: https://www.xmatters.com/blog/blog-four-rest-api-versioning-strategies/
 
@@ -33,6 +34,16 @@ Manages an Amazon API Gateway Version 2 API.
 
 Note:
 
-- Amazon API Gateway Version 2 resources are used for creating and deploying **WebSocket and HTTP APIs.**
+- Amazon **API Gateway Version 2** resources are used for creating and deploying **WebSocket and HTTP APIs.**
 
 - To create and deploy **REST APIs**, use Amazon **API Gateway Version 1** resources.
+
+## REST API Gateway - Lambda Authorizer
+
+https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html
+
+- A Lambda authorizer (formerly known as a custom authorizer) is an API Gateway feature that uses a Lambda function to control access to your API.
+
+- A Lambda authorizer is useful if you want to implement a custom authorization scheme that uses a bearer token authentication strategy such as OAuth or SAML, or that uses request parameters to determine the caller's identity.
+
+- When a client makes a request to one of your API's methods, API Gateway calls your Lambda authorizer, which takes the caller's identity as input and returns an IAM policy as output.
