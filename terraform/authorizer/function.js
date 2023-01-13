@@ -11,7 +11,10 @@
 
 exports.handler = async (event, context, callback) => {
   console.log('Event: ', event);
-  let token = event.authorizationToken;
+  console.log('event.authorizationToken: ', event.authorizationToken);
+  var token = event.authorizationToken;
+	console.log('token: ', token);
+
   switch (token) {
       case 'allow':
           callback(null, generatePolicy('user', 'Allow', event.methodArn));
@@ -20,23 +23,23 @@ exports.handler = async (event, context, callback) => {
           callback(null, generatePolicy('user', 'Deny', event.methodArn));
           break;
       case 'unauthorized':
-          callback("Unauthorized");         // Return a 401 Unauthorized response
+          callback('Unauthorized');         // Return a 401 Unauthorized response
           break;
       default:
-          callback("Error: Invalid token"); // Return a 500 Invalid token response
+          callback('Error: Invalid token'); // Return a 500 Invalid token response
   }
 };
 
 // Help function to generate an IAM policy
-let generatePolicy = function(principalId, effect, resource) {
-  let authResponse = {};
+var generatePolicy = function(principalId, effect, resource) {
+  var authResponse = {};
 
   authResponse.principalId = principalId;
   if (effect && resource) {
-      let policyDocument = {};
+      var policyDocument = {};
       policyDocument.Version = '2012-10-17';
       policyDocument.Statement = [];
-      let statementOne = {};
+      var statementOne = {};
       statementOne.Action = 'execute-api:Invoke';
       statementOne.Effect = effect;
       statementOne.Resource = resource;
