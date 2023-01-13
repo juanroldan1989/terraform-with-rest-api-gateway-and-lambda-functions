@@ -14,7 +14,7 @@ resource "aws_api_gateway_stage" "production" {
   ]
   deployment_id = aws_api_gateway_deployment.main.id
   rest_api_id   = aws_api_gateway_rest_api.main.id
-  stage_name    = "production"
+  stage_name    = "v1"
 
   access_log_settings {
     destination_arn = aws_cloudwatch_log_group.main_api_gw.arn

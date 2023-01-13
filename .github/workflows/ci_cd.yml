@@ -154,7 +154,6 @@ jobs:
           echo $api_base_url
           bash integration.test.sh $api_base_url
 
-  # TODO: VERSIONING
   # load_tests:
   # - validate rate limiting behavior
   #     -> To avoid API endpoints quota abuse on users

@@ -26,13 +26,15 @@
 
 ## REST API Gateway - Features implemented
 
-- Routes integration with Lambda Functions.
+- Routes integration with Lambda Functions ✅
+- Lambda Authorizer implemented for specific endpoints ✅
+- API Versioning through URI path ✅
+- CI/CD: API Deployment through Github Actions -> Terraform -> AWS ✅
 - Usage Plans.
+- API Keys.
 - Rate Limits.
 - API Load Testing.
 - Throttle Configuration.
-- Deployment through Github Actions -> Terraform -> AWS
-- API Versioning through URI path. Another alternatives: https://www.xmatters.com/blog/blog-four-rest-api-versioning-strategies/
 
 ## REST APIs vs HTTP APIs
 
@@ -63,7 +65,7 @@
 
 - With a REST API we can apply **Usage Plans, Rate Limits and Throttle Configuration.**
 
-https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/apigatewayv2_api
+- Reference: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/apigatewayv2_api
 
 ```
 Resource: aws_apigatewayv2_api
@@ -80,11 +82,11 @@ Note:
 
 https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html
 
-- A Lambda authorizer (formerly known as a custom authorizer) is an API Gateway feature that uses a Lambda function to control access to your API.
+- A Lambda authorizer (formerly known as a custom authorizer) is an API Gateway feature that uses a `Lambda function to control access to your API`.
 
-- A Lambda authorizer is useful if you want to implement a custom authorization scheme that uses a bearer token authentication strategy such as OAuth or SAML, or that uses request parameters to determine the caller's identity.
+- A Lambda authorizer is useful if you want to implement a `custom` authorization scheme that uses a bearer token authentication strategy such as OAuth or SAML, or that uses request parameters to determine the caller's identity.
 
-- When a client makes a request to one of your API's methods, API Gateway calls your Lambda authorizer, which takes the caller's identity as input and returns an IAM policy as output.
+- When a client makes a request to one of your API's methods, API Gateway calls your Lambda authorizer, which takes the caller's **identity as input** and returns an **IAM policy as output.**
 
 ### Testing Lambda Authorizer (Console)
 
@@ -123,7 +125,7 @@ If `Lambda Event Payload` is set as `Token`, then check the `Token Source` value
 Authorization logic applied through `Lambda Authorizer` function:
 
 ```ruby
-% curl https://8ts578vs23.execute-api.us-east-1.amazonaws.com/production
+% curl https://<api-id>.execute-api.<region>.amazonaws.com/v1
 
 { "message" : "Missing Authentication Token" }
 ```
@@ -143,7 +145,7 @@ resource "aws_api_gateway_method" "hello_method" {
 ```
 
 ```ruby
-curl https://8ts578vs23.execute-api.us-east-1.amazonaws.com/production/hello
+curl https://<api-id>.execute-api.<region>.amazonaws.com/v1/hello
 
 { "message" : "Hello, world!" }
 ```
@@ -164,13 +166,13 @@ resource "aws_api_gateway_method" "hello_method" {
 ```
 
 ```ruby
-$ curl https://8ts578vs23.execute-api.us-east-1.amazonaws.com/production/goodbye
+$ curl https://<api-id>.execute-api.<region>.amazonaws.com/v1/goodbye
 
 { "message" : "Unauthorized" }
 ```
 
 ```ruby
-$ curl https://8ts578vs23.execute-api.us-east-1.amazonaws.com/production/goodbye \
+$ curl https://<api-id>.execute-api.<region>.amazonaws.com/v1/goodbye \
 -H "Authorization: allow"
 
 { "message" : "Goodbye!" }
