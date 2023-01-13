@@ -62,9 +62,29 @@ https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lamb
 
 ### Testing Lambda Authorizer (Console)
 
+- AWS Reference for 401 errors: https://aws.amazon.com/premiumsupport/knowledge-center/api-gateway-401-error-lambda-authorizer/
+
 <img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/1.png" width="100%" />
 
 <img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/2.png" width="100%" />
+
+## Testing for token-based Lambda authorizers (Postman)
+
+If `Lambda Event Payload` is set as `Token`, then check the `Token Source` value. The `Token Source` value must be used as the `request header` in calls to your API:
+
+<img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/3.png" width="100%" />
+
+### Testing - Authorization Header with `allow` value
+
+<img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/4.png" width="100%" />
+
+### Testing - Authorization Header with `deny` value
+
+<img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/5.png" width="100%" />
+
+### Testing - Authorization Header not included in request
+
+<img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/6.png" width="100%" />
 
 ## REST API Gateway - Stage
 
@@ -120,12 +140,26 @@ resource "aws_api_gateway_method" "hello_method" {
 ```ruby
 $ curl https://8ts578vs23.execute-api.us-east-1.amazonaws.com/production/goodbye
 
-{ "message" : "Missing Authentication Token" }
+{ "message" : "Unauthorized" }
 ```
 
 ```ruby
 $ curl https://8ts578vs23.execute-api.us-east-1.amazonaws.com/production/goodbye \
--H "Authentication header: value"
+-H "Authorization: allow"
 
 { "message" : "Goodbye!" }
 ```
+
+## Deployment - Terraform - Random Error
+
+```ruby
+$ terraform apply
+```
+
+```
+Error creating API Gateway Deployment: BadRequestException: The REST API doesn't contain any methods
+```
+
+Temporarly solution: run `terraform apply` again.
+
+TODO: research and fix this.
