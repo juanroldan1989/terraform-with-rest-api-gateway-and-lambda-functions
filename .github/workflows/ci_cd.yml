@@ -22,8 +22,20 @@ jobs:
         with:
           node-version: 14
 
+      - name: "[Authorizer Lambda Function] Install Dependencies & Run Linters"
+        working-directory: terraform/authorizer
+        run: |
+          npm ci
+          npx eslint function.js
+
       - name: "[Hello Lambda Function] Install Dependencies & Run Linters"
         working-directory: terraform/hello
+        run: |
+          npm ci
+          npx eslint function.js
+
+      - name: "[Goodbye Lambda Function] Install Dependencies & Run Linters"
+        working-directory: terraform/goodbye
         run: |
           npm ci
           npx eslint function.js
@@ -40,8 +52,20 @@ jobs:
         with:
           node-version: 14
 
+      - name: "[Authorizer Lambda Function] Install Dependencies & Run Tests"
+        working-directory: terraform/authorizer
+        run: |
+          npm ci
+          npm run test tests/
+
       - name: "[Hello Lambda Function] Install Dependencies & Run Tests"
         working-directory: terraform/hello
+        run: |
+          npm ci
+          npm run test tests/
+
+      - name: "[Goodbye Lambda Function] Install Dependencies & Run Tests"
+        working-directory: terraform/goodbye
         run: |
           npm ci
           npm run test tests/
@@ -118,6 +142,13 @@ jobs:
 
       - name: Hello Endpoint
         working-directory: terraform/hello/tests
+        run: |
+          api_base_url="${{ needs.deployment.outputs.api_base_url }}"
+          echo $api_base_url
+          bash integration.test.sh $api_base_url
+
+      - name: Goodbye Endpoint
+        working-directory: terraform/goodbye/tests
         run: |
           api_base_url="${{ needs.deployment.outputs.api_base_url }}"
           echo $api_base_url

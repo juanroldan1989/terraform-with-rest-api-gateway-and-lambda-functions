@@ -9,24 +9,27 @@
 // the authorizer returns an HTTP 500 status code.
 // Note that token values are case-sensitive.
 
+// NodeJS Authorizer alternative (extended version):
+// https://github.com/awslabs/aws-apigateway-lambda-authorizer-blueprints/blob/master/blueprints/nodejs/index.js
+
 exports.handler = async (event, context, callback) => {
   console.log('Event: ', event);
   console.log('event.authorizationToken: ', event.authorizationToken);
   var token = event.authorizationToken;
-	console.log('token: ', token);
+  console.log('token: ', token);
 
   switch (token) {
-      case 'allow':
-          callback(null, generatePolicy('user', 'Allow', event.methodArn));
-          break;
-      case 'deny':
-          callback(null, generatePolicy('user', 'Deny', event.methodArn));
-          break;
-      case 'unauthorized':
-          callback('Unauthorized');         // Return a 401 Unauthorized response
-          break;
-      default:
-          callback('Error: Invalid token'); // Return a 500 Invalid token response
+  case 'allow':
+    callback(null, generatePolicy('user', 'Allow', event.methodArn));
+    break;
+  case 'deny':
+    callback(null, generatePolicy('user', 'Deny', event.methodArn));
+    break;
+  case 'unauthorized':
+    callback('Unauthorized');         // Return a 401 Unauthorized response
+    break;
+  default:
+    callback('Error: Invalid token'); // Return a 500 Invalid token response
   }
 };
 
@@ -36,22 +39,22 @@ var generatePolicy = function(principalId, effect, resource) {
 
   authResponse.principalId = principalId;
   if (effect && resource) {
-      var policyDocument = {};
-      policyDocument.Version = '2012-10-17';
-      policyDocument.Statement = [];
-      var statementOne = {};
-      statementOne.Action = 'execute-api:Invoke';
-      statementOne.Effect = effect;
-      statementOne.Resource = resource;
-      policyDocument.Statement[0] = statementOne;
-      authResponse.policyDocument = policyDocument;
+    var policyDocument = {};
+    policyDocument.Version = '2012-10-17';
+    policyDocument.Statement = [];
+    var statementOne = {};
+    statementOne.Action = 'execute-api:Invoke';
+    statementOne.Effect = effect;
+    statementOne.Resource = resource;
+    policyDocument.Statement[0] = statementOne;
+    authResponse.policyDocument = policyDocument;
   }
 
   // Optional output with custom properties of the String, Number or Boolean type.
   authResponse.context = {
-      "stringKey": "stringval",
-      "numberKey": 123,
-      "booleanKey": true
+    "stringKey": "stringval",
+    "numberKey": 123,
+    "booleanKey": true
   };
   return authResponse;
-}
+};
