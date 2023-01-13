@@ -1,4 +1,30 @@
-# REST API Gateway
+# REST API Gateway - Lambda authorization workflow
+
+1. The client calls a method on an API Gateway API method, passing a bearer token or request parameters.
+
+2. API Gateway checks whether a Lambda authorizer is configured for the method. If it is, API Gateway calls the Lambda function.
+
+3. The Lambda function authenticates the caller by means such as the following:
+
+- Calling out to an OAuth provider to get an OAuth access token.
+
+- Calling out to a SAML provider to get a SAML assertion.
+
+- Generating an IAM policy based on the request parameter values.
+
+- Retrieving credentials from a database.
+
+4. If the call succeeds, the Lambda function grants access by returning an output object containing at least an IAM policy and a principal identifier.
+
+5. API Gateway evaluates the policy.
+
+- If access is denied, API Gateway returns a suitable HTTP status code, such as 403 ACCESS_DENIED.
+
+- If access is allowed, API Gateway executes the method. If caching is enabled in the authorizer settings, API Gateway also caches the policy so that the Lambda authorizer function doesn't need to be invoked again.
+
+<img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/custom-auth-workflow.png" width="100%" />
+
+## REST API Gateway - Features implemented
 
 - Routes integration with Lambda Functions.
 - Usage Plans.
@@ -21,7 +47,7 @@
 
 - Choose HTTP APIs if you don't need the features included with REST APIs.
 
-## REST API implementation through Terraform
+## REST API Gateway implementation through Terraform
 
 - Reference: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/api_gateway_rest_api
 
@@ -86,13 +112,13 @@ If `Lambda Event Payload` is set as `Token`, then check the `Token Source` value
 
 <img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/6.png" width="100%" />
 
-## REST API Gateway - Stage
+## REST API Gateway - Stage resource
 
 - https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/api_gateway_stage
 
 - Manages an API Gateway Stage. A stage is a named reference to a deployment, which can be done via the `aws_api_gateway_deployment` resource.
 
-## REST API Gateway - ROOT Path
+## REST API Gateway - Base Path
 
 Authorization logic applied through `Lambda Authorizer` function:
 
