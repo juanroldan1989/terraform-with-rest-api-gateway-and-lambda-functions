@@ -40,6 +40,12 @@ jobs:
           npm ci
           npx eslint function.js
 
+      - name: "[Welcome Lambda Function] Install Dependencies & Run Linters"
+        working-directory: terraform/welcome
+        run: |
+          npm ci
+          npx eslint function.js
+
   unit_tests:
     name: "Lambda Functions - Testing"
     runs-on: ubuntu-latest
@@ -66,6 +72,12 @@ jobs:
 
       - name: "[Goodbye Lambda Function] Install Dependencies & Run Tests"
         working-directory: terraform/goodbye
+        run: |
+          npm ci
+          npm run test tests/
+
+      - name: "[Welcome Lambda Function] Install Dependencies & Run Tests"
+        working-directory: terraform/welcome
         run: |
           npm ci
           npm run test tests/
@@ -154,7 +166,16 @@ jobs:
           echo $api_base_url
           bash integration.test.sh $api_base_url
 
+      - name: Welcome Endpoint
+        working-directory: terraform/welcome/tests
+        run: |
+          api_base_url="${{ needs.deployment.outputs.api_base_url }}"
+          echo $api_base_url
+          bash integration.test.sh $api_base_url
+
   # load_tests:
+  # - validate & track API endpoints performance after deploy is completed
+  #   -> if endpoint X is taking "more than usual" to respond, could mean something is wrong
   # - validate rate limiting behavior
   #     -> To avoid API endpoints quota abuse on users
   #     -> Validate API Key usage (implement - TODO)
