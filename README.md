@@ -150,7 +150,7 @@ curl https://<api-id>.execute-api.<region>.amazonaws.com/v1/hello
 { "message" : "Hello, world!" }
 ```
 
-## REST API Gateway - Goodbye Endpoint (private)
+## REST API Gateway - Goodbye Endpoint (private with token)
 
 ```ruby
 # 3-rest-api-gateway-integration-goodbye-lambda.tf
@@ -177,6 +177,55 @@ $ curl https://<api-id>.execute-api.<region>.amazonaws.com/v1/goodbye \
 
 { "message" : "Goodbye!" }
 ```
+
+## REST API Gateway - Welcome Endpoint (private with API_KEY)
+
+```ruby
+# 3-rest-api-gateway-integration-goodbye-lambda.tf
+...
+
+resource "aws_api_gateway_method" "welcome_method" {
+  rest_api_id      = aws_api_gateway_rest_api.main.id
+  resource_id      = aws_api_gateway_resource.goodbye_resource.id
+  http_method      = "GET"
+  authorization    = "NONE"
+  api_key_required = true
+}
+```
+
+```ruby
+$ curl https://<api-id>.execute-api.<region>.amazonaws.com/v1/welcome
+
+{ "message" : "Unauthorized" }
+```
+
+```ruby
+$ curl https://<api-id>.execute-api.<region>.amazonaws.com/v1/welcome \
+-H "api_key: XXXXXXXXXX"
+
+{ "message" : "Welcome :)" }
+```
+
+### REST API Gateway - Scenario: `API Key` provided as URL `parameter`
+
+https://aws.amazon.com/blogs/compute/accepting-api-keys-as-a-query-string-in-amazon-api-gateway/
+
+**How API Gateway handles API keys**
+
+- API Gateway supports API keys sent as headers in a request.
+  It does not support API keys sent as a query string parameter. API Gateway only accepts requests over HTTPS, which means that the request is encrypted.
+- When sending API keys as query string parameters, there is still a risk that URLs are logged in plaintext by the client sending requests.
+
+**API Gateway has two settings to accept API keys:**
+
+1. Header: The request contains the values as the X-API-Key header. API Gateway then validates the key against a usage plan.
+2. Authorizer: The authorizer includes the API key as part of the authorization response. Once API Gateway receives the API key as part of the response, it validates it against a usage plan.
+
+**Long term considerations**
+
+- This temporary solution enables developers to migrate APIs to API Gateway and maintain query string-based API keys. While this solution does work, it does not follow best practices.
+
+- In addition to security, there is also a cost factor. Each time the client request contains an API key, the custom authorizer AWS Lambda function will be invoked, increasing the total amount of Lambda invocations you are billed for.
 
 ## Deployment - Terraform - Random Error
 

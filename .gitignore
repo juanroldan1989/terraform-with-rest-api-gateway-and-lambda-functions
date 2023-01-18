@@ -4,7 +4,9 @@ terraform/.terraform
 terraform/authorizer.zip
 terraform/goodbye.zip
 terraform/hello.zip
+terraform/welcome.zip
 
 terraform/authorizer/node_modules
 terraform/goodbye/node_modules
 terraform/hello/node_modules
+terraform/welcome/node_modules
