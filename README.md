@@ -26,14 +26,18 @@
 
 ## REST API Gateway - Features implemented
 
-- Routes integration with Lambda Functions ✅
-- Lambda Authorizer implemented for specific endpoints ✅
-- API Versioning through URI path ✅
-- CI/CD: API Deployment through Github Actions -> Terraform -> AWS ✅
-- Usage Plans (FREE) applied to stages ✅
-- API Key required for specific endpoints ✅
-- Rate Limits & Throttle Configuration ✅
-- API Load Testing
+1. Routes integration with Lambda Functions ✅
+2. Lambda Authorizer implemented for specific endpoints ✅
+3. API Versioning through URI path ✅
+4. CI/CD:
+   4.a. Deployment can be triggered from GIT commit messages by including `[deploy]` ✅
+   4.b. Deployment can be triggered manually using Terraform CLI within `terraform` folder ✅
+   4.c. Pre-Deployment `linting` and `unit_tests` steps triggered through Github Actions ✅
+   4.d. Post-Deployment `integration_tests` and `load_tests` steps triggered through Github Actions ✅
+5. Usage Plans (`FREE`) applied to stages (`v1`) ✅
+6. API Key required for specific endpoints (`welcome`)✅
+7. Rate Limits & Throttle Configuration ✅
+8. API Load Testing
 
 ## REST APIs vs HTTP APIs
 
@@ -252,6 +256,12 @@ https://aws.amazon.com/blogs/compute/accepting-api-keys-as-a-query-string-in-ama
 - This temporary solution enables developers to migrate APIs to API Gateway and maintain query string-based API keys. While this solution does work, it does not follow best practices.
 
 - In addition to security, there is also a cost factor. Each time the client request contains an API key, the custom authorizer AWS Lambda function will be invoked, increasing the total amount of Lambda invocations you are billed for.
+
+## REST API Gateway - Load Testing
+
+- https://www.artillery.io/docs/guides/getting-started/installing-artillery
+
+- https://www.artillery.io/docs/guides/integration-guides/github-actions
 
 ## Deployment - Terraform - Random Error
 
