@@ -5,23 +5,23 @@ resource "aws_api_gateway_rest_api" "main" {
 resource "aws_api_gateway_deployment" "main" {
   rest_api_id = aws_api_gateway_rest_api.main.id
 
-  # triggers = {
-  # NOTE: The configuration below will satisfy ordering considerations,
-  #       but not pick up all future REST API changes. More advanced patterns
-  #       are possible, such as using the filesha1() function against the
-  #       Terraform configuration file(s) or removing the .id references to
-  #       calculate a hash against whole resources. Be aware that using whole
-  #       resources will show a difference after the initial implementation.
-  #       It will stabilize to only change when resources change afterwards.
-  # redeployment = sha1(jsonencode([
-  #   aws_api_gateway_integration.goodbye_integration,
-  #   aws_api_gateway_integration.hello_integration,
-  #   aws_api_gateway_integration.welcome_integration
-  # ]))
+  triggers = {
+    # NOTE: The configuration below will satisfy ordering considerations,
+    #       but not pick up all future REST API changes. More advanced patterns
+    #       are possible, such as using the filesha1() function against the
+    #       Terraform configuration file(s) or removing the .id references to
+    #       calculate a hash against whole resources. Be aware that using whole
+    #       resources will show a difference after the initial implementation.
+    #       It will stabilize to only change when resources change afterwards.
+    redeployment = sha1(jsonencode([
+      aws_api_gateway_integration.goodbye_integration,
+      aws_api_gateway_integration.hello_integration,
+      aws_api_gateway_integration.welcome_integration
+    ]))
 
-  # `aws_api_gateway_integration.<resource_name>` using the whole resource itself,
-  # instead of just the `id`.connection. `id` does not change unless the entire resource is recreated
-  # }
+    # `aws_api_gateway_integration.<resource_name>` using the whole resource itself,
+    # instead of just the `id`.connection. `id` does not change unless the entire resource is recreated
+  }
 
   # Also adding a timestamp within `redeployment` items can trigger a redeployment
   # variables = {
@@ -29,9 +29,9 @@ resource "aws_api_gateway_deployment" "main" {
   # }
   # }
 
-  # lifecycle {
-  #   create_before_destroy = true
-  # }
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_api_gateway_stage" "production" {
