@@ -89,7 +89,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       api_base_url: ${{steps.options.outputs.api_base_url}}
-      bucket_name: ${{steps.options.outputs.bucket_name}}
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v3
@@ -126,23 +125,13 @@ jobs:
           echo $api_base_url
           echo "::set-output name=value::${api_base_url}"
 
-      - name: Set Step's Output with `bucket_name` value from <terraform output>
-        id: bucket_name_step
-        working-directory: terraform
-        run: |
-          bucket_name=$(terraform output -raw test_s3_bucket)
-          echo $bucket_name
-          echo "::set-output name=value::${bucket_name}"
-
-      - name: Set Job's Output with `api_base_url` & `bucket_name` values
+      - name: Set Job's Output with `api_base_url`
         uses: actions/github-script@v5
         id: options
         with:
           script: |
             console.log('*** api_base_url:', '${{steps.api_base_url_step.outputs.value}}');
-            console.log('*** bucket_name:', '${{steps.bucket_name_step.outputs.value}}');
             core.setOutput('api_base_url', '${{steps.api_base_url_step.outputs.value}}');
-            core.setOutput('bucket_name', '${{steps.bucket_name_step.outputs.value}}');
 
   integration_tests:
     needs: deployment
@@ -185,7 +174,6 @@ jobs:
   #     -> Rate limit API Key users to 10 requests per second
   #
   # - validate caching implementation on API Endpoints
-  #     -> (for S3 function -> bucket/object combination queried multiple times)
   #     -> (for DynamoDB function -> super_name, person_name queried multiple times)
 
   # send-notification:
