@@ -196,12 +196,12 @@ resource "aws_api_gateway_method" "welcome_method" {
 ```ruby
 $ curl https://<api-id>.execute-api.<region>.amazonaws.com/v1/welcome
 
-{ "message" : "Unauthorized" }
+{ "message" : "Forbidden" }
 ```
 
 ```ruby
 $ curl https://<api-id>.execute-api.<region>.amazonaws.com/v1/welcome \
--H "api_key: XXXXXXXXXX"
+-H "x-api-key: XXXXXXXXXX"
 
 { "message" : "Welcome :)" }
 ```
