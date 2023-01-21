@@ -1,0 +1,10 @@
+config:
+  target: "https://cv2kszmn2g.execute-api.us-east-1.amazonaws.com/v1"
+  phases:
+    - duration: 1 # test duration (seconds)
+      arrivalRate: 3 # requests per second
+scenarios:
+  - flow:
+      - get:
+          url: "/hello"
+      - log: "Sent GET request to public endpoint `hello`"

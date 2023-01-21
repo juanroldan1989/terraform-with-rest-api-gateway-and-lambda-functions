@@ -1,11 +1,11 @@
 terraform {
-  # cloud {
-  #   organization = "JUANROLDAN-training"
+  cloud {
+    organization = "JUANROLDAN-training"
 
-  #   workspaces {
-  #     name = "terraform-with-api-gateway-and-lambda-function"
-  #   }
-  # }
+    workspaces {
+      name = "terraform-with-rest-api-gateway-and-lambda-functions"
+    }
+  }
 
   required_providers {
     aws = {

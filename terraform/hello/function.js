@@ -18,7 +18,7 @@ exports.handler = async (event) => {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-        message: responseMessage
+      message: responseMessage
     }),
   };
 

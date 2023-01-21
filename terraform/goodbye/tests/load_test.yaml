@@ -1,0 +1,13 @@
+config:
+  target: "https://cv2kszmn2g.execute-api.us-east-1.amazonaws.com/v1"
+  phases:
+    - duration: 1 # test duration (seconds)
+      arrivalRate: 3 # requests per second
+  defaults:
+    headers:
+      Authorization: "allow"
+scenarios:
+  - flow:
+      - get:
+          url: "/goodbye"
+      - log: "Sent GET request to private endpoint (token) `goodbye`"
