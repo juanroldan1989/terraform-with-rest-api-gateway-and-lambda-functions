@@ -163,7 +163,7 @@ jobs:
       #     bash integration.test.sh $api_base_url
 
   load_tests:
-    needs: integration_tests
+    needs: [deployment, integration_tests]
     name: "API Load Testing"
     runs-on: ubuntu-latest
     container: artilleryio/artillery:latest
@@ -175,12 +175,16 @@ jobs:
         run: mkdir reports
 
       - name: Execute load tests for `hello` endpoint
+        env:
+          TARGET: "${{ needs.deployment.outputs.api_base_url }}"
         run: /home/node/artillery/bin/run run --output reports/load_test_report_hello_endpoint.json terraform/hello/tests/load_test.yaml
 
       - name: Generate HTML report for `hello` endpoint
         run: /home/node/artillery/bin/run report --output reports/report reports/load_test_report_hello_endpoint.json
 
       - name: Execute load tests for `goodbye` endpoint
+        env:
+          TARGET: "${{ needs.deployment.outputs.api_base_url }}"
         run: /home/node/artillery/bin/run run --output reports/load_test_report_goodbye_endpoint.json terraform/goodbye/tests/load_test.yaml
 
       - name: Generate HTML report for `goodbye` endpoint
