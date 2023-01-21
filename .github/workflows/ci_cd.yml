@@ -173,8 +173,6 @@ jobs:
   #         -> or request parameters and grant access
   #     -> Rate limit API Key users to 10 requests per second
   #
-  # - validate caching implementation on API Endpoints
-  #     -> (for DynamoDB function -> super_name, person_name queried multiple times)
 
   # send-notification:
   #   runs-on: [ubuntu-latest]

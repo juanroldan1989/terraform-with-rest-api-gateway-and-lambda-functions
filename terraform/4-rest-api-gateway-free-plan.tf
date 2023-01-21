@@ -12,8 +12,9 @@ resource "aws_api_gateway_usage_plan" "free" {
     stage  = aws_api_gateway_stage.production.stage_name
   }
 
+  # using `limit  = 10` for testing purposes only
   quota_settings {
-    limit  = 200    # Maximum number of requests that can be made in a given time period.
+    limit  = 10     # Maximum number of requests that can be made in a given time period.
     offset = 2      # Number of requests subtracted from the given limit in the initial time period.
     period = "WEEK" # Time period in which the limit applies. Valid values are "DAY", "WEEK" or "MONTH"
   }
