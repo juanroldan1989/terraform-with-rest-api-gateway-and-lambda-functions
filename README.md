@@ -30,11 +30,10 @@
 - Lambda Authorizer implemented for specific endpoints ✅
 - API Versioning through URI path ✅
 - CI/CD: API Deployment through Github Actions -> Terraform -> AWS ✅
-- Usage Plans.
-- API Keys.
-- Rate Limits.
-- API Load Testing.
-- Throttle Configuration.
+- Usage Plans (FREE) applied to stages ✅
+- API Key required for specific endpoints ✅
+- Rate Limits & Throttle Configuration ✅
+- API Load Testing
 
 ## REST APIs vs HTTP APIs
 
@@ -205,6 +204,33 @@ $ curl https://<api-id>.execute-api.<region>.amazonaws.com/v1/welcome \
 
 { "message" : "Welcome :)" }
 ```
+
+### Limit Exceeded (429 Throthling Error Response)
+
+- Terraform API configuration for `v1/welcome` endpoint:
+
+```ruby
+# terraform/4-rest-api-gateway-free-plan.tf
+
+  quota_settings {
+    limit  = 10     # Maximum number of requests that can be made in a given time period.
+    offset = 2      # Number of requests subtracted from the given limit in the initial time period.
+    period = "WEEK" # Time period in which the limit applies. Valid values are "DAY", "WEEK" or "MONTH"
+  }
+```
+
+- After exceeding **weekly** limit of **10 requests**:
+
+```ruby
+$ curl https://<api-id>.execute-api.<region>.amazonaws.com/v1/welcome \
+-H "x-api-key: XXXXXXXXXX"
+
+{"message":"Limit Exceeded"}
+```
+
+- CloudWatch Logs showing error:
+
+<img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/limit-exceeded.png" width="100%" />
 
 ### REST API Gateway - Scenario: `API Key` provided as URL `parameter`
 
