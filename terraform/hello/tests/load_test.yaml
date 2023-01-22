@@ -1,10 +1,20 @@
 config:
   target: "{{ $processEnvironment.TARGET }}"
   phases:
-    - duration: 1 # test duration (seconds)
+    - duration: 5 # test duration (seconds)
       arrivalRate: 3 # requests per second
 scenarios:
   - flow:
       - get:
           url: "/hello"
       - log: "Sent GET request to public endpoint `hello`"
+      - get:
+          url: "/hello"
+          qs: # query strings
+            Name: "John"
+      - log: "Sent GET request to public endpoint `hello` with `Name` parameter"
+      - post:
+          url: "/hello"
+          json:
+            Name: "Max"
+      - log: "Sent POST request to public endpoint `hello` with `Name` attribute in payload"
