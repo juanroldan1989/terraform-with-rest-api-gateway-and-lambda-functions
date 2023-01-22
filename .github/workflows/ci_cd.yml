@@ -11,7 +11,7 @@ on:
 
 jobs:
   linting:
-    name: "Lambda Functions - Linting"
+    name: "Lambda Functions (Linting)"
     runs-on: ubuntu-latest
     steps:
       - name: Check out Git repository
@@ -47,7 +47,7 @@ jobs:
           npx eslint function.js
 
   unit_tests:
-    name: "Lambda Functions - Testing"
+    name: "Lambda Functions (Unit Testing)"
     runs-on: ubuntu-latest
     steps:
       - name: Check out Git repository
@@ -135,7 +135,7 @@ jobs:
 
   integration_tests:
     needs: deployment
-    name: "API Testing"
+    name: "API Testing (Integration)"
     runs-on: ubuntu-latest
     steps:
       - name: Check out Git repository
@@ -164,7 +164,7 @@ jobs:
 
   load_tests:
     needs: [deployment, integration_tests]
-    name: "API Load Testing"
+    name: "API Testing (Load)"
     runs-on: ubuntu-latest
     container: artilleryio/artillery:latest
     steps:

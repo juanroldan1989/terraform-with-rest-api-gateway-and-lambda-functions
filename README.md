@@ -1,4 +1,27 @@
-# REST API Gateway - Lambda authorization workflow
+# REST API Gateway implementation
+
+1. [API Endpoints available](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#api-endpoints-available)
+2. [Lambda Authorization workflow](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#lambda-authorization-worfklow)
+3. [API Components built through Terraform](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#api-components-built-through-terraform)
+4. [API Versioning through URI path](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#api-versioning-through-uri-path)
+5. [API Configuration (rate limiting & throttling)](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#api-configuration-rate-limiting--throttling)
+6. [API Testing](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#api-testing)
+7. [CI/CD (Github Actions -> Terraform -> AWS)](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#cicd-github-actions---terraform---aws)
+8. [REST APIs vs HTTP APIs](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#rest-apis-vs-http-apis)
+9. [API Development Lifecycle](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#api-development-lifecycle)
+10. [Further improvements](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#further-improvements)
+
+# API Endpoints available
+
+1. `hello` is a **public** endpoint. All requests are delivered into `hello` Lambda function.
+
+2. `goodbye` is a **private** endpoint. Access validated through `token` via `Lambda Authorizer` function. Validated requests are delivered into `goodbye` Lambda function.
+
+3. `welcome` is a **private** endpoint. Access validated through `API_KEY`. Validated requests are delivered into `welcome` Lambda function.
+
+Base path is: `https://<api-id>.execute-api.<region>.amazonaws.com/v1/`
+
+# Lambda Authorization worfklow
 
 1. The client calls a method on an API Gateway API method, passing a bearer token or request parameters.
 
@@ -24,40 +47,19 @@
 
 <img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/custom-auth-workflow.png" width="100%" />
 
-## REST API Gateway - Features implemented
+## REST API Gateway - Lambda Authorizer
 
-1. Routes integration with Lambda Functions ✅
-2. Lambda Authorizer implemented for specific endpoints ✅
-3. API Versioning through URI path ✅
-4. CI/CD:
+https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html
 
-   4.a. Deployment can be triggered from GIT commit messages by including `[deploy]` ✅
+- A Lambda authorizer (formerly known as a custom authorizer) is an API Gateway feature that uses a `Lambda function to control access to your API`.
 
-   4.b. Deployment can be triggered manually using Terraform CLI within `terraform` folder ✅
+- A Lambda authorizer is useful if you want to implement a `custom` authorization scheme that uses a bearer token authentication strategy such as OAuth or SAML, or that uses request parameters to determine the caller's identity.
 
-   4.c. Pre-Deployment `linting` and `unit_tests` steps triggered through Github Actions ✅
+- When a client makes a request to one of your API's methods, API Gateway calls your Lambda authorizer, which takes the caller's **identity as input** and returns an **IAM policy as output.**
 
-   4.d. Post-Deployment `integration_tests` and `load_tests` steps triggered through Github Actions ✅
+# API Components built through Terraform
 
-5. Usage Plans (`FREE`) applied to stages (`v1`) ✅
-6. API Key required for specific endpoints (`welcome`)✅
-7. Rate Limits & Throttle Configuration ✅
-8. API Load Testing
-
-## REST APIs vs HTTP APIs
-
-- https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-vs-rest.html
-- https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-routes.html
-
-- REST APIs and HTTP APIs are both RESTful API products.
-
-- REST APIs support more features than HTTP APIs, while HTTP APIs are designed with minimal features so that they can be offered at a lower price.
-
-- Choose REST APIs if you need features such as API keys, per-client throttling, request validation, AWS WAF integration, or private API endpoints.
-
-- Choose HTTP APIs if you don't need the features included with REST APIs.
-
-## REST API Gateway implementation through Terraform
+- REST API Gateway implemented via Terraform (Infrastructure as Code)
 
 - Reference: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/api_gateway_rest_api
 
@@ -85,48 +87,6 @@ Note:
 - Amazon **API Gateway Version 2** resources are used for creating and deploying **WebSocket and HTTP APIs.**
 
 - To create and deploy **REST APIs**, use Amazon **API Gateway Version 1** resources.
-
-## REST API Gateway - Lambda Authorizer
-
-https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html
-
-- A Lambda authorizer (formerly known as a custom authorizer) is an API Gateway feature that uses a `Lambda function to control access to your API`.
-
-- A Lambda authorizer is useful if you want to implement a `custom` authorization scheme that uses a bearer token authentication strategy such as OAuth or SAML, or that uses request parameters to determine the caller's identity.
-
-- When a client makes a request to one of your API's methods, API Gateway calls your Lambda authorizer, which takes the caller's **identity as input** and returns an **IAM policy as output.**
-
-### Testing Lambda Authorizer (Console)
-
-- AWS Reference for 401 errors: https://aws.amazon.com/premiumsupport/knowledge-center/api-gateway-401-error-lambda-authorizer/
-
-<img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/1.png" width="100%" />
-
-<img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/2.png" width="100%" />
-
-## Testing for token-based Lambda authorizers (Postman)
-
-If `Lambda Event Payload` is set as `Token`, then check the `Token Source` value. The `Token Source` value must be used as the `request header` in calls to your API:
-
-<img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/3.png" width="100%" />
-
-### Testing - Authorization Header with `allow` value
-
-<img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/4.png" width="100%" />
-
-### Testing - Authorization Header with `deny` value
-
-<img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/5.png" width="100%" />
-
-### Testing - Authorization Header not included in request
-
-<img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/6.png" width="100%" />
-
-## REST API Gateway - Stage resource
-
-- https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/api_gateway_stage
-
-- Manages an API Gateway Stage. A stage is a named reference to a deployment, which can be done via the `aws_api_gateway_deployment` resource.
 
 ## REST API Gateway - Base Path
 
@@ -160,6 +120,8 @@ curl https://<api-id>.execute-api.<region>.amazonaws.com/v1/hello
 
 ## REST API Gateway - Goodbye Endpoint (private with token)
 
+Authorization logic applied through `Lambda Authorizer` function:
+
 ```ruby
 # 3-rest-api-gateway-integration-goodbye-lambda.tf
 ...
@@ -188,6 +150,8 @@ $ curl https://<api-id>.execute-api.<region>.amazonaws.com/v1/goodbye \
 
 ## REST API Gateway - Welcome Endpoint (private with API_KEY)
 
+Authorization logic applied through `API KEY`:
+
 ```ruby
 # 3-rest-api-gateway-integration-goodbye-lambda.tf
 ...
@@ -214,34 +178,7 @@ $ curl https://<api-id>.execute-api.<region>.amazonaws.com/v1/welcome \
 { "message" : "Welcome :)" }
 ```
 
-### Limit Exceeded (429 Throthling Error Response)
-
-- Terraform API configuration for `v1/welcome` endpoint:
-
-```ruby
-# terraform/4-rest-api-gateway-free-plan.tf
-
-  quota_settings {
-    limit  = 10     # Maximum number of requests that can be made in a given time period.
-    offset = 2      # Number of requests subtracted from the given limit in the initial time period.
-    period = "WEEK" # Time period in which the limit applies. Valid values are "DAY", "WEEK" or "MONTH"
-  }
-```
-
-- After exceeding **weekly** limit of **10 requests**:
-
-```ruby
-$ curl https://<api-id>.execute-api.<region>.amazonaws.com/v1/welcome \
--H "x-api-key: XXXXXXXXXX"
-
-{"message":"Limit Exceeded"}
-```
-
-- CloudWatch Logs showing error:
-
-<img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/limit-exceeded.png" width="100%" />
-
-### REST API Gateway - Scenario: `API Key` provided as URL `parameter`
+## REST API Gateway - Scenario: `API Key` provided as URL `parameter`
 
 https://aws.amazon.com/blogs/compute/accepting-api-keys-as-a-query-string-in-amazon-api-gateway/
 
@@ -262,9 +199,65 @@ https://aws.amazon.com/blogs/compute/accepting-api-keys-as-a-query-string-in-ama
 
 - In addition to security, there is also a cost factor. Each time the client request contains an API key, the custom authorizer AWS Lambda function will be invoked, increasing the total amount of Lambda invocations you are billed for.
 
-## REST API Gateway - Load Testing
+# API Versioning through URI path
 
-Artillery references:
+- Versioning achieved through Terraform `stage` resource.
+
+- https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/api_gateway_stage
+
+- Manages an API Gateway Stage. A stage is a named reference to a deployment, which can be done via the `aws_api_gateway_deployment` resource.
+
+```ruby
+resource "aws_api_gateway_stage" "production" {
+  # To avoid issue:
+  # "CloudWatch Logs role ARN must be set in account settings to enable logging"
+  depends_on = [
+    aws_api_gateway_account.main
+  ]
+  deployment_id = aws_api_gateway_deployment.main.id
+  rest_api_id   = aws_api_gateway_rest_api.main.id
+  stage_name    = "v1"
+
+```
+
+# API Configuration (rate limiting & throttling)
+
+**Limit Exceeded (429 Throthling Error Response)**
+
+- Configuration applied for `welcome` endpoint via `FREE` Usage Plan:
+
+```ruby
+# terraform/4-rest-api-gateway-free-plan.tf
+
+  quota_settings {
+    limit  = 10     # Maximum number of requests that can be made in a given time period.
+    offset = 2      # Number of requests subtracted from the given limit in the initial time period.
+    period = "WEEK" # Time period in which the limit applies. Valid values are "DAY", "WEEK" or "MONTH"
+  }
+```
+
+- After exceeding **weekly** limit of **10 requests**:
+
+```ruby
+$ curl https://<api-id>.execute-api.<region>.amazonaws.com/v1/welcome \
+-H "x-api-key: XXXXXXXXXX"
+
+{"message":"Limit Exceeded"}
+```
+
+- AWS CloudWatch Logs showing error:
+
+<img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/limit-exceeded.png" width="100%" />
+
+# API Testing
+
+Testing is conducted on 3 steps within Github Actions workflow:
+
+1. Lambda Functions (Unit testing)
+2. API Testing (Integration)
+3. API Testing (Load)
+
+**Artillery** used for load testing and gathering results on different endpoints.
 
 - https://www.artillery.io/docs/guides/getting-started/installing-artillery
 
@@ -274,17 +267,17 @@ Artillery references:
 
 - https://dev.to/brpaz/load-testing-your-applications-with-artillery-4m1p
 
-AWS references:
+- AWS references: https://aws.amazon.com/blogs/compute/load-testing-a-web-applications-serverless-backend/
 
-- https://aws.amazon.com/blogs/compute/load-testing-a-web-applications-serverless-backend/
+## API Load Testing Reports
 
-- API Load Testing Report (`Artifacts` section) generated by Github Actions workflow:
+Reports present in `ZIP` file within `Artifacts` section, generated by Github Actions workflow:
 
-<img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/load-testing-report.png" width="100%" />
+<img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/load-test-report.png" width="100%" />
 
-### Artillery Config - Setting success conditions
+## API Load Testing Conditions
 
-- Load testing results for `hello` endpoint -> `response time` for 95% of requests (`p95` parameter) is close to `150ms`:
+Load testing results for `hello` endpoint -> `response time` for 95% of requests (`p95` parameter) is close to `150ms`:
 
 <img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/load-test-response-time-hello-endpoint.png" width="100%" />
 
@@ -300,20 +293,127 @@ config:
 
 - This is really useful in a CI environment as you can make the test fail **if it doesn't meet your performance requirements.**
 
-## Github Actions improvements
+## Testing Lambda Authorizer (AWS Console)
 
-- In the same way `deployment` can be triggered via GIT Commit messages, we can apply a similar behavior to each `integration_tests` and `load_tests` steps within Github Actions workflows:
+- AWS Reference for 401 errors: https://aws.amazon.com/premiumsupport/knowledge-center/api-gateway-401-error-lambda-authorizer/
+
+<img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/1.png" width="100%" />
+
+<img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/2.png" width="100%" />
+
+## Testing for token-based Lambda authorizers (Postman)
+
+If `Lambda Event Payload` is set as `Token`, then check the `Token Source` value. The `Token Source` value must be used as the `request header` in calls to your API:
+
+<img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/3.png" width="100%" />
+
+## Testing - Authorization Header with `allow` value
+
+<img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/4.png" width="100%" />
+
+## Testing - Authorization Header with `deny` value
+
+<img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/5.png" width="100%" />
+
+## Testing - Authorization Header not included in request
+
+<img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/6.png" width="100%" />
+
+# CI/CD (Github Actions -> Terraform -> AWS)
+
+- Deployment can be triggered from `GIT commit messages` by including `[deploy]`
+
+- Deployment can be triggered `manually` using Terraform CLI within `terraform` folder
+
+- Pre-Deployment `linting` and `unit_tests` steps triggered through Github Actions
+
+- Post-Deployment `integration_tests` and `load_tests` steps triggered through Github Actions
+
+<img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/load-test-report.png" width="100%" />
+
+- Github Actions workflow can be customized here:
+
+```ruby
+# .github/workflows/ci_cd.yml
+
+name: "CI/CD Pipeline"
+
+on:
+  push:
+    paths:
+      - "terraform/**"
+      - ".github/workflows/**"
+    branches:
+      - main
+  pull_request:
+...
+```
+
+# REST APIs vs HTTP APIs
+
+- https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-vs-rest.html
+- https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-routes.html
+
+- REST APIs and HTTP APIs are both RESTful API products.
+
+- REST APIs support more features than HTTP APIs, while HTTP APIs are designed with minimal features so that they can be offered at a lower price.
+
+- Choose REST APIs if you need features such as API keys, per-client throttling, request validation, AWS WAF integration, or private API endpoints.
+
+- Choose HTTP APIs if you don't need the features included with REST APIs.
+
+# API Development Lifecycle
+
+Adding a new endpoint (same applies for existing endpoints)
+
+1. Create a new branch from `main`.
+2. Create a new `NodeJS` function folder.
+3. Create a new `Lambda function` through `Terraform`.
+4. Create a new `Terraform Integration` for said Lambda function.
+5. Create `unit/integration/load_test tests` for said Lambda function.
+6. Apply `linting` best practices to new function file.
+7. Commit changes in your `feature branch` and create a `New Pull Request`.
+8. `Github Actions` workflow will be triggered in your new branch.
+9. Validate `workflow run` results.
+10. Once everything is validated by yourself and/or colleagues, push a new commit (it could be an empty one) with the word `[deploy]`.
+11. This will trigger the **entire github actions workflow** end to end:
+
+    11.a. Lambda Functions (Linting)
+
+    11.b. Lambda Functions (Unit Testing)
+
+    11.c. Deploy (Terraform -> AWS)
+
+    11.d. API Testing (Integration)
+
+    11.e. API Testing (Load)
+
+12. Once everything is validated by yourself and/or colleagues, you can merge your branch into `main`.
+
+# Further improvements
+
+- In the same way `deployment` can be triggered via GIT Commit messages, we can apply a similar behavior to each `linting`, `unit_tests`, `integration_tests` and/or `load_tests` steps within Github Actions workflows:
+
+```ruby
+  linting:
+    name: "Lambda Functions (Linting)"
+    if: "contains(github.event.head_commit.message, '[linting]')"
+```
+
+```ruby
+  linting:
+    name: "Lambda Functions (Unit Testing)"
+    if: "contains(github.event.head_commit.message, '[unit_tests]')"
+```
 
 ```ruby
   integration_tests:
-    needs: deployment
     name: "API Testing"
     if: "contains(github.event.head_commit.message, '[integration_tests]')"
 ```
 
 ```ruby
   load_tests:
-    needs: integration_tests
     name: "API Load Testing"
     if: "contains(github.event.head_commit.message, '[load_tests]')"
 ```
@@ -332,6 +432,4 @@ $ terraform apply
 Error creating API Gateway Deployment: BadRequestException: The REST API doesn't contain any methods
 ```
 
-Temporarly solution: run `terraform apply` again.
-
-TODO: research and fix this.
+Temporarly solution: run `terraform apply` again. Research in progress.
