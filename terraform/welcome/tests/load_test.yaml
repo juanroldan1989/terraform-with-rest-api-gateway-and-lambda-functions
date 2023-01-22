@@ -1,11 +1,13 @@
 config:
   target: "{{ $processEnvironment.TARGET }}"
+  ensure:
+    p95: 250
   phases:
     - duration: 1 # test duration (seconds)
       arrivalRate: 3 # requests per second
   defaults:
     headers:
-      x-api-key: "XXXXXXXX"
+      x-api-key: "XXXXXXXX" # TODO: inject API Key here for testing purposes
 scenarios:
   - flow:
       - get:

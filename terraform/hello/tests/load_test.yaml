@@ -1,5 +1,7 @@
 config:
   target: "{{ $processEnvironment.TARGET }}"
+  ensure:
+    p95: 200
   phases:
     - duration: 5 # test duration (seconds)
       arrivalRate: 3 # requests per second
