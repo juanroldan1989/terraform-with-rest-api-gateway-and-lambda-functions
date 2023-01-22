@@ -180,7 +180,7 @@ jobs:
         run: /home/node/artillery/bin/run run --output reports/load_test_report_hello_endpoint.json terraform/hello/tests/load_test.yaml
 
       - name: Generate HTML report for `hello` endpoint
-        run: /home/node/artillery/bin/run report --output reports/load_test_report_hello_endpoint reports/load_test_report_hello_endpoint.json
+        run: /home/node/artillery/bin/run report --output reports/load_test_report_hello_endpoint.html reports/load_test_report_hello_endpoint.json
 
       - name: Execute load tests for `goodbye` endpoint
         env:
@@ -188,7 +188,7 @@ jobs:
         run: /home/node/artillery/bin/run run --output reports/load_test_report_goodbye_endpoint.json terraform/goodbye/tests/load_test.yaml
 
       - name: Generate HTML report for `goodbye` endpoint
-        run: /home/node/artillery/bin/run report --output reports/load_test_report_goodbye_endpoint reports/load_test_report_goodbye_endpoint.json
+        run: /home/node/artillery/bin/run report --output reports/load_test_report_goodbye_endpoint.html reports/load_test_report_goodbye_endpoint.json
 
       # - name: Execute load tests for `welcome` endpoint
       #   env:
@@ -196,7 +196,7 @@ jobs:
       #   run: /home/node/artillery/bin/run run --output reports/load_test_report_welcome_endpoint.json terraform/welcome/tests/load_test.yaml
 
       # - name: Generate HTML report for `welcome` endpoint
-      #   run: /home/node/artillery/bin/run report --output reports/load_test_report_welcome_endpoint reports/load_test_report_welcome_endpoint.json
+      #   run: /home/node/artillery/bin/run report --output reports/load_test_report_welcome_endpoint.html reports/load_test_report_welcome_endpoint.json
 
       - name: Archive test reports
         uses: actions/upload-artifact@v2
