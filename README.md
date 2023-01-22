@@ -11,6 +11,8 @@
 9. [API Development Lifecycle](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#api-development-lifecycle)
 10. [Further improvements](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#further-improvements)
 
+<img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/load-test-report.png" width="100%" />
+
 # API Endpoints available
 
 1. `hello` is a **public** endpoint. All requests are delivered into `hello` Lambda function.
@@ -257,6 +259,8 @@ Testing is conducted on 3 steps within Github Actions workflow:
 2. API Testing (Integration)
 3. API Testing (Load)
 
+## API Load Testing with Artillery
+
 **Artillery** used for load testing and gathering results on different endpoints.
 
 - https://www.artillery.io/docs/guides/getting-started/installing-artillery
@@ -307,15 +311,15 @@ If `Lambda Event Payload` is set as `Token`, then check the `Token Source` value
 
 <img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/3.png" width="100%" />
 
-## Testing - Authorization Header with `allow` value
+### 1. Postman - `Authorization` Header with `allow` value
 
 <img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/4.png" width="100%" />
 
-## Testing - Authorization Header with `deny` value
+### 2. Postman - `Authorization` Header with `deny` value
 
 <img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/5.png" width="100%" />
 
-## Testing - Authorization Header not included in request
+### 3. Postman - `Authorization` Header not included in request
 
 <img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/6.png" width="100%" />
 
@@ -364,33 +368,74 @@ on:
 
 # API Development Lifecycle
 
-Adding a new endpoint (same applies for existing endpoints)
+## Configuration steps
+
+1. Clone repository.
+2. Validate Terraform <-> Github Actions <-> AWS integration: https://developer.hashicorp.com/terraform/tutorials/automation/github-actions
+3. Adjuste `0-providers.tf` file to your own Terraform workspace specifications.
+
+## Adding a new endpoint (same applies for existing endpoints)
 
 1. Create a new branch from `main`.
-2. Create a new `NodeJS` function folder.
+2. Create a new `NodeJS` function folder. Run `npm init` & `npm install <module>` as you need.
 3. Create a new `Lambda function` through `Terraform`.
 4. Create a new `Terraform Integration` for said Lambda function.
-5. Create `unit/integration/load_test tests` for said Lambda function.
-6. Apply `linting` best practices to new function file.
-7. Commit changes in your `feature branch` and create a `New Pull Request`.
-8. `Github Actions` workflow will be triggered in your new branch.
-9. Validate `workflow run` results.
-10. Once everything is validated by yourself and/or colleagues, push a new commit (it could be an empty one) with the word `[deploy]`.
-11. This will trigger the **entire github actions workflow** end to end:
+5. Create `unit`, `integration`, `load_test` tests for said Lambda function.
+6. AWS Lambda functions can be tested locally using `aws invoke` command (https://docs.aws.amazon.com/lambda/latest/dg/API_Invoke.html).
+7. Apply `linting` best practices to new function file.
+8. Add `unit`, `integration`, `load_test` steps into Github Actions (`ci_cd.yml`) following the same pattern as other lambda functions.
+9. Commit changes in your `feature branch` and create a `New Pull Request`.
+10. `Github Actions` workflow will be triggered in your new branch.
+11. Validate `workflow run` results.
+12. Once everything is validated by yourself and/or colleagues, push a new commit (it could be an empty one) with the word `[deploy]`.
+13. This will trigger the **entire github actions workflow** end to end:
 
-    11.a. Lambda Functions (Linting)
+    13.a. Lambda Functions (Linting)
 
-    11.b. Lambda Functions (Unit Testing)
+    13.b. Lambda Functions (Unit Testing)
 
-    11.c. Deploy (Terraform -> AWS)
+    13.c. Deploy (Terraform -> AWS)
 
-    11.d. API Testing (Integration)
+    13.d. API Testing (Integration)
 
-    11.e. API Testing (Load)
+    13.e. API Testing (Load)
 
-12. Once everything is validated by yourself and/or colleagues, you can merge your branch into `main`.
+14. Once everything is validated by yourself and/or colleagues, you can merge your branch into `main`.
+
+15. Once Github Actions workflow runs, there is the possibility of sending notifications with workflow results into Slack channel/s:
+
+```ruby
+# .github/workflows/ci_cd.yml
+
+...
+
+send-notification:
+  runs-on: [ubuntu-latest]
+  timeout-minutes: 7200
+  needs: [linting, unit_tests, deployment, integration_tests, load_tests]
+  if: ${{ always() }}
+  steps:
+    - name: Send Slack Notification
+      uses: rtCamp/action-slack-notify@v2
+      if: always()
+      env:
+        SLACK_CHANNEL: devops-sample-slack-channel
+        SLACK_COLOR: ${{ job.status }}
+        SLACK_ICON: https://avatars.githubusercontent.com/u/54465427?v=4
+        SLACK_MESSAGE: |
+          "Lambda Functions (Linting): ${{ needs.linting.outputs.status || 'Not Performed' }}" \
+          "Lambda Functions (Unit Testing): ${{ needs.unit_tests.outputs.status || 'Not Performed' }}" \
+          "API Deployment: ${{ needs.deployment.outputs.status }}" \
+          "API Tests (Integration): ${{ needs.integration_tests.outputs.status || 'Not Performed' }}" \
+          "API Tests (Load): ${{ needs.load_tests.outputs.status || 'Not Performed' }}"
+        SLACK_TITLE: CI/CD Pipeline Results
+        SLACK_USERNAME: Github Actions Bot
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+```
 
 # Further improvements
+
+## Deployment
 
 - In the same way `deployment` can be triggered via GIT Commit messages, we can apply a similar behavior to each `linting`, `unit_tests`, `integration_tests` and/or `load_tests` steps within Github Actions workflows:
 
@@ -422,7 +467,15 @@ Adding a new endpoint (same applies for existing endpoints)
 
 - Also, a **default** tests list (e.g.: `linting`, `unit_tests`, `integration_tests` and `load_tests`) could be set to run **every time** a new feature is added to `main` branch.
 
-## Deployment - Terraform - Random Error
+## Authorizer Lambda Function logic
+
+Once `token` is received within Authorizer Lambda function, there are a couple of ways to validate it:
+
+1. Call out to OAuth provider
+2. Decode a JWT token inline
+3. Lookup in a self-managed DB
+
+## Deployment - Random Error on Terraform
 
 ```ruby
 $ terraform apply

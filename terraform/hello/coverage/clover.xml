@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1673479658831" clover="3.2.0">
-  <project timestamp="1673479658832" name="All files">
+<coverage generated="1674418307836" clover="3.2.0">
+  <project timestamp="1674418307836" name="All files">
     <metrics statements="10" coveredstatements="10" conditionals="6" coveredconditionals="6" methods="1" coveredmethods="1" elements="17" coveredelements="17" complexity="0" loc="10" ncloc="10" packages="1" files="1" classes="1"/>
     <file name="function.js" path="/Users/juan/code/terraform-with-rest-api-gateway-and-lambda-functions/terraform/hello/function.js">
       <metrics statements="10" coveredstatements="10" conditionals="6" coveredconditionals="6" methods="1" coveredmethods="1"/>
