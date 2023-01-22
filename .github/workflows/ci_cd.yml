@@ -58,29 +58,29 @@ jobs:
         with:
           node-version: 14
 
-      # - name: "[Authorizer Lambda Function] Install Dependencies & Run Tests"
-      #   working-directory: terraform/authorizer
-      #   run: |
-      #     npm ci
-      #     npm run test tests/
+      - name: "[Authorizer Lambda Function] Install Dependencies & Run Tests"
+        working-directory: terraform/authorizer
+        run: |
+          npm ci
+          npm run test tests/
 
-      # - name: "[Hello Lambda Function] Install Dependencies & Run Tests"
-      #   working-directory: terraform/hello
-      #   run: |
-      #     npm ci
-      #     npm run test tests/
+      - name: "[Hello Lambda Function] Install Dependencies & Run Tests"
+        working-directory: terraform/hello
+        run: |
+          npm ci
+          npm run test tests/
 
-      # - name: "[Goodbye Lambda Function] Install Dependencies & Run Tests"
-      #   working-directory: terraform/goodbye
-      #   run: |
-      #     npm ci
-      #     npm run test tests/
+      - name: "[Goodbye Lambda Function] Install Dependencies & Run Tests"
+        working-directory: terraform/goodbye
+        run: |
+          npm ci
+          npm run test tests/
 
-      # - name: "[Welcome Lambda Function] Install Dependencies & Run Tests"
-      #   working-directory: terraform/welcome
-      #   run: |
-      #     npm ci
-      #     npm run test tests/
+      - name: "[Welcome Lambda Function] Install Dependencies & Run Tests"
+        working-directory: terraform/welcome
+        run: |
+          npm ci
+          npm run test tests/
 
   deployment:
     needs: [linting, unit_tests]
@@ -141,19 +141,19 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v3
 
-      # - name: Hello Endpoint
-      #   working-directory: terraform/hello/tests
-      #   run: |
-      #     api_base_url="${{ needs.deployment.outputs.api_base_url }}"
-      #     echo $api_base_url
-      #     bash integration.test.sh $api_base_url
+      - name: Hello Endpoint
+        working-directory: terraform/hello/tests
+        run: |
+          api_base_url="${{ needs.deployment.outputs.api_base_url }}"
+          echo $api_base_url
+          bash integration.test.sh $api_base_url
 
-      # - name: Goodbye Endpoint
-      #   working-directory: terraform/goodbye/tests
-      #   run: |
-      #     api_base_url="${{ needs.deployment.outputs.api_base_url }}"
-      #     echo $api_base_url
-      #     bash integration.test.sh $api_base_url
+      - name: Goodbye Endpoint
+        working-directory: terraform/goodbye/tests
+        run: |
+          api_base_url="${{ needs.deployment.outputs.api_base_url }}"
+          echo $api_base_url
+          bash integration.test.sh $api_base_url
 
       # - name: Welcome Endpoint
       #   working-directory: terraform/welcome/tests
@@ -204,18 +204,13 @@ jobs:
           name: artillery-test-report
           path: reports/*
 
-  # - validate rate limiting behavior
-  #     -> To avoid API endpoints quota abuse on users
   #     -> Validate API Key usage (implement - TODO)
-  #       -> Lambda authorizers:
-  #         -> use lambda to validate a bearer token (OAuth)
-  #         -> or request parameters and grant access
   #     -> Rate limit API Key users to 10 requests per second
 
   # send-notification:
   #   runs-on: [ubuntu-latest]
   #   timeout-minutes: 7200
-  #   needs: [linting, unit_tests, deployment, integration_tests]
+  #   needs: [linting, unit_tests, deployment, integration_tests, load_tests]
   #   if: ${{ always() }}
   #   steps:
   #     - name: Send Slack Notification
@@ -226,11 +221,11 @@ jobs:
   #         SLACK_COLOR: ${{ job.status }}
   #         SLACK_ICON: https://avatars.githubusercontent.com/u/54465427?v=4
   #         SLACK_MESSAGE: |
-  #           "Lambda Functions - Linting: ${{ needs.linting.outputs.status }}" \
-  #           "Lambda Functions - Unit Tests: ${{ needs.unit_tests.outputs.status }}" \
+  #           "Lambda Functions (Linting): ${{ needs.linting.outputs.status || 'Not Performed' }}" \
+  #           "Lambda Functions (Unit Testing): ${{ needs.unit_tests.outputs.status || 'Not Performed' }}" \
   #           "API Deployment: ${{ needs.deployment.outputs.status }}" \
-  #           "API Tests: ${{ needs.integration_tests.outputs.status || 'Not Performed' }}" \
-  #           "API Load Tests: ${{ needs.load_tests.outputs.status || 'Not Performed' }}"
+  #           "API Tests (Integration): ${{ needs.integration_tests.outputs.status || 'Not Performed' }}" \
+  #           "API Tests (Load): ${{ needs.load_tests.outputs.status || 'Not Performed' }}"
   #         SLACK_TITLE: CI/CD Pipeline Results
   #         SLACK_USERNAME: Github Actions Bot
   #         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}

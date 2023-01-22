@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1674426312475" clover="3.2.0">
+  <project timestamp="1674426312475" name="All files">
+    <metrics statements="27" coveredstatements="18" conditionals="8" coveredconditionals="7" methods="2" coveredmethods="2" elements="37" coveredelements="27" complexity="0" loc="27" ncloc="27" packages="1" files="1" classes="1"/>
+    <file name="function.js" path="/Users/juan/code/terraform-with-rest-api-gateway-and-lambda-functions/terraform/authorizer/function.js">
+      <metrics statements="27" coveredstatements="18" conditionals="8" coveredconditionals="7" methods="2" coveredmethods="2"/>
+      <line num="21" count="1" type="stmt"/>
+      <line num="22" count="4" type="stmt"/>
+      <line num="24" count="4" type="stmt"/>
+      <line num="35" count="4" type="stmt"/>
+      <line num="37" count="4" type="cond" truecount="4" falsecount="0"/>
+      <line num="39" count="1" type="stmt"/>
+      <line num="40" count="1" type="stmt"/>
+      <line num="42" count="1" type="stmt"/>
+      <line num="43" count="1" type="stmt"/>
+      <line num="45" count="1" type="stmt"/>
+      <line num="46" count="1" type="stmt"/>
+      <line num="48" count="1" type="stmt"/>
+      <line num="53" count="1" type="stmt"/>
+      <line num="54" count="2" type="stmt"/>
+      <line num="56" count="2" type="stmt"/>
+      <line num="57" count="2" type="cond" truecount="3" falsecount="1"/>
+      <line num="58" count="0" type="stmt"/>
+      <line num="59" count="0" type="stmt"/>
+      <line num="60" count="0" type="stmt"/>
+      <line num="61" count="0" type="stmt"/>
+      <line num="62" count="0" type="stmt"/>
+      <line num="63" count="0" type="stmt"/>
+      <line num="64" count="0" type="stmt"/>
+      <line num="65" count="0" type="stmt"/>
+      <line num="66" count="0" type="stmt"/>
+      <line num="70" count="2" type="stmt"/>
+      <line num="75" count="2" type="stmt"/>
+    </file>
+  </project>
+</coverage>

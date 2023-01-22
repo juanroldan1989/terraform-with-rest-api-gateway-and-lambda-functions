@@ -11,9 +11,31 @@ echo $api_base_url
 ##############################################
 
 ##############################################
-### Hello API Endpoint should return default message when no parameters are provided
+### Welcome API Endpoint should return default message when API KEY is provided
 ##############################################
-request_parameters="/hello"
+request_parameters="/welcome"
+full_request_url="${api_base_url}${request_parameters}"
+echo $full_request_url
+
+# `-s` option is for `silent` - otherwise it shows `curl` standard table for download in progress
+response=$(curl -s -H 'x-api-key: XXXXX' "${full_request_url}")
+
+# echo $response
+# { "message" : "Welcome :)" }
+
+if [[ $response =~ "Welcome" ]]
+then
+  echo "[Welcome API Endpoint] should return default message when API KEY is provided - OK"
+else
+  echo "[Welcome API Endpoint] should return default message when API KEY is provided - FAILED"
+  exit 1
+fi
+##############################################
+
+##############################################
+### Welcome API Endpoint should return forbidden message when no API KEY is provided
+##############################################
+request_parameters="/welcome"
 full_request_url="${api_base_url}${request_parameters}"
 echo $full_request_url
 
@@ -21,31 +43,13 @@ echo $full_request_url
 response=$(curl -s "${full_request_url}")
 
 # echo $response
-# { "message" : "Hello, world!" }
+# { "message" : "Forbidden" }
 
-if [[ $response =~ "Hello, world!" ]]
+if [[ $response =~ "Forbidden" ]]
 then
-  echo "[Hello API Endpoint] should return default message when no parameters are provided - OK"
+  echo "[Welcome API Endpoint] should return forbidden message when no API KEY is provided - OK"
 else
-  echo "[Hello API Endpoint] should return default message when no parameters are provided - FAILED"
-  exit 1
-fi
-##############################################
-
-##############################################
-### Hello API Endpoint should return custom message when NAME parameter is provided
-##############################################
-request_parameters="/hello?Name=John"
-full_request_url="${api_base_url}${request_parameters}"
-echo $full_request_url
-
-response=$(curl -s "${full_request_url}")
-
-if [[ $response =~ "John" ]]
-then
-  echo "[Hello API Endpoint] should return custom message when NAME parameter is provided - OK"
-else
-  echo "[Hello API Endpoint] should return custom message when NAME parameter is provided - FAILED"
+  echo "[Welcome API Endpoint] should return forbidden message when no API KEY is provided - FAILED"
   exit 1
 fi
 ##############################################
