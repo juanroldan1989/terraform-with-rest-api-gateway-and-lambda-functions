@@ -89,6 +89,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       api_base_url: ${{steps.options.outputs.api_base_url}}
+      api_key_free_plan: ${{steps.options.outputs.api_key_free_plan}}
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v3
@@ -125,13 +126,23 @@ jobs:
           echo $api_base_url
           echo "::set-output name=value::${api_base_url}"
 
-      - name: Set Job's Output with `api_base_url`
+      - name: Set Step's Output with `api_key_free_plan` value from <terraform output>
+        id: api_key_free_plan_step
+        working-directory: terraform
+        run: |
+          api_key_free_plan=$(terraform output -raw api_key_free_plan)
+          echo $api_key_free_plan
+          echo "::set-output name=value::${api_key_free_plan}"
+
+      - name: Set Job's Output with `api_base_url` & `api_key_free_plan` values
         uses: actions/github-script@v5
         id: options
         with:
           script: |
             console.log('*** api_base_url:', '${{steps.api_base_url_step.outputs.value}}');
+            console.log('*** api_key_free_plan:', '${{steps.api_key_free_plan_step.outputs.value}}');
             core.setOutput('api_base_url', '${{steps.api_base_url_step.outputs.value}}');
+            core.setOutput('api_key_free_plan', '${{steps.api_key_free_plan_step.outputs.value}}');
 
   integration_tests:
     needs: deployment
@@ -155,12 +166,14 @@ jobs:
           echo $api_base_url
           bash integration.test.sh $api_base_url
 
-      # - name: Welcome Endpoint
-      #   working-directory: terraform/welcome/tests
-      #   run: |
-      #     api_base_url="${{ needs.deployment.outputs.api_base_url }}"
-      #     echo $api_base_url
-      #     bash integration.test.sh $api_base_url
+      - name: Welcome Endpoint
+        working-directory: terraform/welcome/tests
+        run: |
+          api_base_url="${{ needs.deployment.outputs.api_base_url }}"
+          api_key_free_plan="${{ needs.deployment.outputs.api_key_free_plan }}"
+          echo $api_base_url
+          echo $api_key_free_plan
+          bash integration.test.sh $api_base_url $api_key_free_plan
 
   load_tests:
     needs: [deployment, integration_tests]
@@ -190,13 +203,14 @@ jobs:
       - name: Generate HTML report for `goodbye` endpoint
         run: /home/node/artillery/bin/run report --output reports/load_test_report_goodbye_endpoint.html reports/load_test_report_goodbye_endpoint.json
 
-      # - name: Execute load tests for `welcome` endpoint
-      #   env:
-      #     TARGET: "${{ needs.deployment.outputs.api_base_url }}"
-      #   run: /home/node/artillery/bin/run run --output reports/load_test_report_welcome_endpoint.json terraform/welcome/tests/load_test.yaml
+      - name: Execute load tests for `welcome` endpoint
+        env:
+          TARGET: "${{ needs.deployment.outputs.api_base_url }}"
+          FREE_API_KEY: "${{ needs.deployment.outputs.api_key_free_plan }}"
+        run: /home/node/artillery/bin/run run --output reports/load_test_report_welcome_endpoint.json terraform/welcome/tests/load_test.yaml
 
-      # - name: Generate HTML report for `welcome` endpoint
-      #   run: /home/node/artillery/bin/run report --output reports/load_test_report_welcome_endpoint.html reports/load_test_report_welcome_endpoint.json
+      - name: Generate HTML report for `welcome` endpoint
+        run: /home/node/artillery/bin/run report --output reports/load_test_report_welcome_endpoint.html reports/load_test_report_welcome_endpoint.json
 
       - name: Archive test reports
         uses: actions/upload-artifact@v2

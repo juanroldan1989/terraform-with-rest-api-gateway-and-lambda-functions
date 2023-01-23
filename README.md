@@ -19,7 +19,7 @@
 
 2. `goodbye` is a **private** endpoint. Access validated through `token` via `Lambda Authorizer` function. Validated requests are delivered into `goodbye` Lambda function.
 
-3. `welcome` is a **private** endpoint. Access validated through `API_KEY`. Validated requests are delivered into `welcome` Lambda function.
+3. `welcome` is a **private** endpoint. Access validated through `x-api-key` presence in request header. Validated requests are delivered into `welcome` Lambda function.
 
 Base path is: `https://<api-id>.execute-api.<region>.amazonaws.com/v1/`
 
@@ -255,9 +255,9 @@ $ curl https://<api-id>.execute-api.<region>.amazonaws.com/v1/welcome \
 
 Testing is conducted on 3 steps within Github Actions workflow:
 
-1. Lambda Functions (Unit testing)
-2. API Testing (Integration)
-3. API Testing (Load)
+1. Lambda Functions (Unit testing) - [Hello Lambda Function](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/blob/main/terraform/hello/tests/unit.test.js)
+2. API Testing (Integration) - [Welcome Lambda Function](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/blob/main/terraform/welcome/tests/integration.test.sh)
+3. API Testing (Load) - [Goodbye Lambda Function](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/blob/main/terraform/goodbye/tests/load_test.yaml)
 
 ## API Load Testing with Artillery
 
