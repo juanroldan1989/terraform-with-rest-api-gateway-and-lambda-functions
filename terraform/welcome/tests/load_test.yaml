@@ -7,7 +7,7 @@ config:
       arrivalRate: 3 # requests per second
   defaults:
     headers:
-      x-api-key: "XXXXXXXX" # TODO: inject API Key here for testing purposes
+      x-api-key: "{{ $processEnvironment.FREE_API_KEY }}"
 scenarios:
   - flow:
       - get:

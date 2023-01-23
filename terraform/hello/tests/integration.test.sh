@@ -13,8 +13,8 @@ echo $api_base_url
 ##############################################
 ### Hello API Endpoint should return default message when no parameters are provided
 ##############################################
-request_parameters="/hello"
-full_request_url="${api_base_url}${request_parameters}"
+custom_url="/hello"
+full_request_url="${api_base_url}${custom_url}"
 echo $full_request_url
 
 # `-s` option is for `silent` - otherwise it shows `curl` standard table for download in progress
@@ -35,11 +35,14 @@ fi
 ##############################################
 ### Hello API Endpoint should return custom message when NAME parameter is provided
 ##############################################
-request_parameters="/hello?Name=John"
-full_request_url="${api_base_url}${request_parameters}"
+custom_url="/hello?Name=John"
+full_request_url="${api_base_url}${custom_url}"
 echo $full_request_url
 
 response=$(curl -s "${full_request_url}")
+
+# echo $response
+# { "message" : "Hello, John!" }
 
 if [[ $response =~ "John" ]]
 then

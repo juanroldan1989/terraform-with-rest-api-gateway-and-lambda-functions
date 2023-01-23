@@ -25,9 +25,9 @@ response=$(curl -s -H 'Authorization: allow' "${full_request_url}")
 
 if [[ $response =~ "Goodbye!" ]]
 then
-  echo "[Goodbye API Endpoint] should return default message - OK"
+  echo "[Goodbye API Endpoint] should return default message when token 'allow' is provided - OK"
 else
-  echo "[Goodbye API Endpoint] should return default message - FAILED"
+  echo "[Goodbye API Endpoint] should return default message when token 'allow' is provided - FAILED"
   exit 1
 fi
 ##############################################
@@ -40,16 +40,16 @@ full_request_url="${api_base_url}${request_parameters}"
 echo $full_request_url
 
 # `-s` option is for `silent` - otherwise it shows `curl` standard table for download in progress
-response=$(curl -s -H 'Authorization: other' "${full_request_url}")
+response=$(curl -s -H 'Authorization: unauthorized' "${full_request_url}")
 
 # echo $response
-# { "message" : "Goodbye!" }
+# { "message" : "Unauthorized" }
 
-if [[ $response =~ "Goodbye!" ]]
+if [[ $response =~ "Unauthorized" ]]
 then
-  echo "[Goodbye API Endpoint] should return unauthorized message when token `allow` is not provided - OK"
+  echo "[Goodbye API Endpoint] should return unauthorized message when token 'allow' is not provided - OK"
 else
-  echo "[Goodbye API Endpoint] should return unauthorized message when token `allow` is not provided - FAILED"
+  echo "[Goodbye API Endpoint] should return unauthorized message when token 'allow' is not provided - FAILED"
   exit 1
 fi
 ##############################################
