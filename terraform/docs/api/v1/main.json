@@ -1,0 +1,125 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "REST API with 3 endpoints",
+    "description": "REST API Gateway backed by 3 AWS Lambda Functions",
+    "version": "1.0.0"
+  },
+  "host": "https://<api-id>.execute-api.<region>.amazonaws.com",
+  "basePath": "/v1",
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/goodbye": {
+      "get": {
+        "summary": "Returns goodbye message",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "schema": {
+              "type": "string",
+              "format": "Authorization: <token>"
+            },
+            "required": true
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "message": "Goodbye!"
+          },
+          "401": {
+            "message": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/hello": {
+      "get": {
+        "summary": "Returns standard hello message",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "message": "Hello, world!"
+          }
+        }
+      },
+      "post": {
+        "summary": "Returns standard hello message",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "message": "Hello, world!"
+          }
+        }
+      }
+    },
+    "/hello?Name=John": {
+      "parameters": [
+        {
+          "name": "Name",
+          "in": "query",
+          "description": "Name to say hello back",
+          "type": "string",
+          "required": false
+        }
+      ],
+      "get": {
+        "summary": "Returns hello message based on parameter",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "message": "Hello, %{Name}!"
+          }
+        }
+      },
+      "post": {
+        "summary": "Returns hello message based on parameter",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "message": "Hello, %{Name}!"
+          }
+        }
+      }
+    },
+    "/welcome": {
+      "get": {
+        "summary": "Returns welcome message",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "message": "Welcome :)"
+          },
+          "401": {
+            "message": "Unauthorized"
+          }
+        }
+      }
+    }
+  }
+}
