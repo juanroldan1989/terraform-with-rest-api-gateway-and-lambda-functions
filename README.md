@@ -1,7 +1,7 @@
 # REST API Gateway implementation
 
-1. [API Endpoints available](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#api-endpoints-available)
-2. [Lambda Authorization workflow](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#lambda-authorization-worfklow)
+1. [API Documentation](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#api-documentation)
+2. [AWS Lambda Authorization workflow](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#aws-lambda-authorization-worfklow)
 3. [API Components built through Terraform](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#api-components-built-through-terraform)
 4. [API Versioning through URI path](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#api-versioning-through-uri-path)
 5. [API Configuration (rate limiting & throttling)](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#api-configuration-rate-limiting--throttling)
@@ -14,17 +14,62 @@
 
 <img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/load-test-report.png" width="100%" />
 
-# API Endpoints available
+# API Documentation
+
+`OpenAPI Specification` (formerly Swagger Specification) is an API description format for REST APIs:
+
+- https://github.com/qct/swagger-example/blob/master/README.md#introduction-to-openapi-specification
+- https://swagger.io/blog/api-documentation/what-is-api-documentation-and-why-it-matters/
+- https://swagger.io/docs/specification/paths-and-operations/
+
+## Static API Docs page
+
+<img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/swagger-api-docs.png" width="100%" />
+
+1. Swagger / OpenAPI `YAML` documentation file (format easier to read & maintain) created following standard guidelines: https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/blob/main/terraform/docs/api/v1/main.yaml
+
+2. `YAML` file converted into `JSON` (since `Swagger UI` script requires a `JSON` file):
+
+```ruby
+docs/api/v1% brew install yq
+docs/api/v1% yq -o=json eval main.yaml > main.json
+```
+
+3. `JSON` file can be accessed through:
+
+   3.a. `Github repository` itself as: https://raw.githubusercontent.com/github_username/terraform-with-rest-api-gateway-and-lambda-functions/main/docs/api/v1/main.yaml or
+
+   3.b. `S3 bucket` that will contain `main.yml`. Bucket created and file uploaded through Terraform.
+
+- Both file accessibility options available within this repository.
+
+4. `static` API Documentation `standalone` HTML page generated within `docs/api/v1` folder in repository: https://github.com/swagger-api/swagger-ui/blob/master/docs/usage/installation.md#plain-old-htmlcssjs-standalone
+
+5. Within `static` API Documentation page, replace `url` value with your own `JSON` file's URL from point `3` above:
+
+```ruby
+...
+    <script>
+      window.onload = () => {
+        window.ui = SwaggerUIBundle({
+          // url: "https://<api-id>.execute-api.<region>.amazonaws.com/main.json",
+          dom_id: '#swagger-ui',
+...
+```
+
+6. A `static website` can also be hosted within `S3 Bucket`: https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteHosting.html
+
+- To upload files `aws sync` command is recommended. E.g.: `aws s3 sync docs/api/v1 s3://$YOUR_BUCKET_NAME`
+
+## API Endpoints integration with AWS Lambda functions
 
 1. `hello` is a **public** endpoint. All requests are delivered into `hello` Lambda function.
 
-2. `goodbye` is a **private** endpoint. Access validated through `token` via `Lambda Authorizer` function. Validated requests are delivered into `goodbye` Lambda function.
+2. `goodbye` is a **private** endpoint. Access validated with `Authorization: <token>` presence in request header via `Lambda Authorizer` function. Validated requests are delivered into `goodbye` Lambda function.
 
 3. `welcome` is a **private** endpoint. Access validated through `x-api-key` presence in request header. Validated requests are delivered into `welcome` Lambda function.
 
-Base path is: `https://<api-id>.execute-api.<region>.amazonaws.com/v1/`
-
-# Lambda Authorization worfklow
+# AWS Lambda Authorization worfklow
 
 1. The client calls a method on an API Gateway API method, passing a bearer token or request parameters.
 
@@ -457,6 +502,10 @@ send-notification:
 ```
 
 # Further improvements
+
+## Terraform modules
+
+REST API Gateway `integration` files for all Lambda Functions could be refactored within a `lambda` module to concentrate shared infrastructure code.
 
 ## Deployment with extra conditions
 
