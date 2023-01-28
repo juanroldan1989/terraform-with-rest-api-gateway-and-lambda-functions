@@ -1,5 +1,5 @@
 resource "random_pet" "lambda_bucket_name" {
-  prefix = "lambda"
+  prefix = "lambdas-api-v1"
   length = 2
 }
 

@@ -1,18 +1,29 @@
 # REST API Gateway implementation
 
-1. [API Documentation](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#api-documentation)
-2. [AWS Lambda Authorization workflow](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#aws-lambda-authorization-worfklow)
-3. [API Components built through Terraform](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#api-components-built-through-terraform)
-4. [API Versioning through URI path](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#api-versioning-through-uri-path)
-5. [API Configuration (rate limiting & throttling)](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#api-configuration-rate-limiting--throttling)
-6. [API Testing](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#api-testing)
-7. [CI/CD (Github Actions -> Terraform -> AWS)](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#cicd-github-actions---terraform---aws)
-8. [Observability, Error Tracking & Cost Monitoring](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#observability-error-tracking--cost-monitoring)
-9. [REST APIs vs HTTP APIs](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#rest-apis-vs-http-apis)
-10. [API Development Lifecycle](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#api-development-lifecycle)
-11. [Further improvements](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#further-improvements)
+1. [Core Features](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#core-features)
+2. [API Documentation](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#api-documentation)
+3. [AWS Lambda Authorization workflow](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#aws-lambda-authorization-worfklow)
+4. [API Components built through Terraform](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#api-components-built-through-terraform)
+5. [API Versioning through URI path](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#api-versioning-through-uri-path)
+6. [API Configuration (rate limiting & throttling)](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#api-configuration-rate-limiting--throttling)
+7. [API Testing](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#api-testing)
+8. [CI/CD (Github Actions -> Terraform -> AWS)](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#cicd-github-actions---terraform---aws)
+9. [Observability, Error Tracking & Cost Monitoring](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#observability-error-tracking--cost-monitoring)
+10. [REST APIs vs HTTP APIs](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#rest-apis-vs-http-apis)
+11. [API Development Lifecycle](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#api-development-lifecycle)
+12. [Further improvements](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#further-improvements)
 
 <img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/load-test-report.png" width="100%" />
+
+# Core Features
+
+REST API should contain 3 endpoints:
+
+1. `hello` is a **public** endpoint. All requests are delivered into `hello` Lambda function.
+
+2. `goodbye` is a **private** endpoint. Access validated with `Authorization: <token>` presence in request header via `Lambda Authorizer` function. Validated requests are delivered into `goodbye` Lambda function.
+
+3. `welcome` is a **private** endpoint. Access validated through `x-api-key` presence in request header. Validated requests are delivered into `welcome` Lambda function.
 
 # API Documentation
 
@@ -41,6 +52,8 @@ docs/api/v1% yq -o=json eval main.yaml > main.json
 
    3.b. `S3 bucket` that will contain `main.yml`. Bucket created and file uploaded through Terraform.
 
+   3.c. Terraform `output` command will show this value under `api_v1_docs_main_json` variable.
+
 - Both file accessibility options available within this repository.
 
 4. `static` API Documentation `standalone` HTML page generated within `docs/api/v1` folder in repository: https://github.com/swagger-api/swagger-ui/blob/master/docs/usage/installation.md#plain-old-htmlcssjs-standalone
@@ -60,14 +73,6 @@ docs/api/v1% yq -o=json eval main.yaml > main.json
 6. A `static website` can also be hosted within `S3 Bucket`: https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteHosting.html
 
 - To upload files `aws sync` command is recommended. E.g.: `aws s3 sync docs/api/v1 s3://$YOUR_BUCKET_NAME`
-
-## API Endpoints integration with AWS Lambda functions
-
-1. `hello` is a **public** endpoint. All requests are delivered into `hello` Lambda function.
-
-2. `goodbye` is a **private** endpoint. Access validated with `Authorization: <token>` presence in request header via `Lambda Authorizer` function. Validated requests are delivered into `goodbye` Lambda function.
-
-3. `welcome` is a **private** endpoint. Access validated through `x-api-key` presence in request header. Validated requests are delivered into `welcome` Lambda function.
 
 # AWS Lambda Authorization worfklow
 
@@ -426,6 +431,20 @@ AWS Lambda Calculator: https://dashbird.io/lambda-cost-calculator/
 
 Optimizing AWS Lambda functions: https://aws.amazon.com/blogs/compute/optimizing-your-aws-lambda-costs-part-1/
 
+## Tagging Best Practices
+
+AWS tags are `key-value` labels you can assign to AWS `resources` that give extra information about them.
+
+Reference: https://engineering.deptagency.com/best-practices-for-terraform-aws-tags
+
+### Searching Resources by `Tag`
+
+https://docs.aws.amazon.com/tag-editor/latest/userguide/find-resources-to-tag.html
+
+<img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/search-resources-by-tag.png" width="100%" />
+
+<img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/search-resources-by-tag-results.png" width="100%" />
+
 # REST APIs vs HTTP APIs
 
 - https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-vs-rest.html
@@ -546,15 +565,3 @@ Once `token` is received within Authorizer Lambda function, there are a couple o
 1. Call out to OAuth provider
 2. Decode a JWT token inline
 3. Lookup in a self-managed DB
-
-## Deployment - Random Error on Terraform
-
-```ruby
-$ terraform apply
-```
-
-```
-Error creating API Gateway Deployment: BadRequestException: The REST API doesn't contain any methods
-```
-
-Temporarly solution: run `terraform apply` again. Research in progress.
