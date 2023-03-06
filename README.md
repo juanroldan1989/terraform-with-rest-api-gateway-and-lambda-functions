@@ -1,5 +1,7 @@
 # REST API Gateway implementation
 
+<img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/custom-auth-workflow.png" width="100%" />
+
 1. [Core Features](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#core-features)
 2. [API Documentation](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#api-documentation)
 3. [AWS Lambda Authorization workflow](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#aws-lambda-authorization-worfklow)
@@ -519,6 +521,10 @@ send-notification:
         SLACK_USERNAME: Github Actions Bot
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 ```
+
+**CI/CD Slack Notification example:**
+
+<img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/slack-notification-from-pipeline.png" width="100%" />
 
 # Further improvements
 
