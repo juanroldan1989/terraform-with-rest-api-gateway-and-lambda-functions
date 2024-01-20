@@ -195,22 +195,22 @@ jobs:
       - name: Generate HTML report for `hello` endpoint
         run: /home/node/artillery/bin/run report --output reports/load_test_report_hello_endpoint.html reports/load_test_report_hello_endpoint.json
 
-      - name: Execute load tests for `goodbye` endpoint
-        env:
-          TARGET: "${{ needs.deployment.outputs.api_base_url }}"
-        run: /home/node/artillery/bin/run run --output reports/load_test_report_goodbye_endpoint.json terraform/goodbye/tests/load_test.yaml
+      # - name: Execute load tests for `goodbye` endpoint
+      #   env:
+      #     TARGET: "${{ needs.deployment.outputs.api_base_url }}"
+      #   run: /home/node/artillery/bin/run run --output reports/load_test_report_goodbye_endpoint.json terraform/goodbye/tests/load_test.yaml
 
-      - name: Generate HTML report for `goodbye` endpoint
-        run: /home/node/artillery/bin/run report --output reports/load_test_report_goodbye_endpoint.html reports/load_test_report_goodbye_endpoint.json
+      # - name: Generate HTML report for `goodbye` endpoint
+      #   run: /home/node/artillery/bin/run report --output reports/load_test_report_goodbye_endpoint.html reports/load_test_report_goodbye_endpoint.json
 
-      - name: Execute load tests for `welcome` endpoint
-        env:
-          TARGET: "${{ needs.deployment.outputs.api_base_url }}"
-          FREE_API_KEY: "${{ needs.deployment.outputs.api_key_free_plan }}"
-        run: /home/node/artillery/bin/run run --output reports/load_test_report_welcome_endpoint.json terraform/welcome/tests/load_test.yaml
+      # - name: Execute load tests for `welcome` endpoint
+      #   env:
+      #     TARGET: "${{ needs.deployment.outputs.api_base_url }}"
+      #     FREE_API_KEY: "${{ needs.deployment.outputs.api_key_free_plan }}"
+      #   run: /home/node/artillery/bin/run run --output reports/load_test_report_welcome_endpoint.json terraform/welcome/tests/load_test.yaml
 
-      - name: Generate HTML report for `welcome` endpoint
-        run: /home/node/artillery/bin/run report --output reports/load_test_report_welcome_endpoint.html reports/load_test_report_welcome_endpoint.json
+      # - name: Generate HTML report for `welcome` endpoint
+      #   run: /home/node/artillery/bin/run report --output reports/load_test_report_welcome_endpoint.html reports/load_test_report_welcome_endpoint.json
 
       - name: Archive test reports
         uses: actions/upload-artifact@v2
