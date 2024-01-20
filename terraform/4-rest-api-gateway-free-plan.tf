@@ -15,15 +15,16 @@ resource "aws_api_gateway_usage_plan" "free" {
   # using `limit  = 10` for local testing purposes only
   # using `limit  = 500` for load testing (artillery) purposes only
   quota_settings {
-    limit  = 500    # Maximum number of requests that can be made in a given time period.
-    offset = 2      # Number of requests subtracted from the given limit in the initial time period.
-    period = "WEEK" # Time period in which the limit applies. Valid values are "DAY", "WEEK" or "MONTH"
+    limit  = 10000 # Maximum number of requests that can be made in a given time period.
+    offset = 2     # Number of requests subtracted from the given limit in the initial time period.
+    period = "DAY" # Time period in which the limit applies. Valid values are "DAY", "WEEK" or "MONTH"
   }
 
-  throttle_settings {
-    burst_limit = 5
-    rate_limit  = 10
-  }
+  # temporary disabled while load testing (artillery) purposes only
+  # throttle_settings {
+  #   burst_limit = 5
+  #   rate_limit  = 10
+  # }
 }
 
 resource "aws_api_gateway_usage_plan_key" "free" {
