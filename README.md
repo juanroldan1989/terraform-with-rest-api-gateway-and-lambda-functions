@@ -338,9 +338,17 @@ Testing is conducted on 3 steps within Github Actions workflow:
 
 ## API Load Testing Conditions
 
-Load testing results for `hello` endpoint -> `response time` for 95% of requests (`p95` parameter) is close to `40ms`:
+<img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/load-test-report-main-header.png" width="100%" />
+
+Load testing results for `hello` endpoint:
+
+- `response time` for 95% of requests (`p95` parameter) is close to `200ms`:
 
 <img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/load-test-response-time-hello-endpoint.png" width="100%" />
+
+- `response code` for requests:
+
+<img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/load-test-response-time-hello-endpoint-200-response.png" width="100%" />
 
 - It's possible to configure Artillery to return a non-zero exit code if the test run doesn't comply with **specified conditions based on a set of parameters** like error rate, minimum, maximum and percentile based latency or **response time.**
 
