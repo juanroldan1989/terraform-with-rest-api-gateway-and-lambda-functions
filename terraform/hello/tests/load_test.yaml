@@ -1,23 +1,23 @@
 config:
   target: "{{ $processEnvironment.TARGET }}"
   ensure:
-    p95: 200
-    max: 500 # the aggregate maximum latency for the test is under 500 milliseconds
+    p95: 200 # 95% of requests are under 200 milliseconds
+    max: 500 # 99% of requests are under 500 milliseconds
   phases:
     - duration: 120 # test duration (seconds)
-      arrivalRate: 10 # requests per second
+      arrivalRate: 10 # requests per second (as "users per second")
 scenarios:
   - flow:
       - get:
           url: "/hello"
       - log: "Sent GET request to public endpoint `hello`"
-      # - get:
-      #     url: "/hello"
-      #     qs: # query strings
-      #       Name: "John"
-      # - log: "Sent GET request to public endpoint `hello` with `Name` parameter"
-      # - post:
-      #     url: "/hello"
-      #     json:
-      #       Name: "Max"
-      # - log: "Sent POST request to public endpoint `hello` with `Name` attribute in payload"
+      - get:
+          url: "/hello"
+          qs: # query strings
+            Name: "John"
+      - log: "Sent GET request to public endpoint `hello` with `Name` parameter"
+      - post:
+          url: "/hello"
+          json:
+            Name: "Max"
+      - log: "Sent POST request to public endpoint `hello` with `Name` attribute in payload"
