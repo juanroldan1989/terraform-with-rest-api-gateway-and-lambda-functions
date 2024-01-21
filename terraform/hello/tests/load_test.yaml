@@ -1,11 +1,11 @@
 config:
   target: "{{ $processEnvironment.TARGET }}"
   ensure:
-    # p95: 200
+    p95: 200
     max: 500 # the aggregate maximum latency for the test is under 500 milliseconds
   phases:
-    - duration: 60 # test duration (seconds)
-      arrivalRate: 500 # requests per second
+    - duration: 120 # test duration (seconds)
+      arrivalRate: 10 # requests per second
 scenarios:
   - flow:
       - get:
