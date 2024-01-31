@@ -1,10 +1,11 @@
 config:
   target: "{{ $processEnvironment.TARGET }}"
   ensure:
-    p95: 250
+    p95: 200 # 95% of requests are under 200 milliseconds
+    max: 500 # 99% of requests are under 500 milliseconds
   phases:
-    - duration: 1 # test duration (seconds)
-      arrivalRate: 3 # requests per second
+    - duration: 120 # test duration (seconds)
+      arrivalRate: 10 # requests per second (as "users per second")  phases:
   defaults:
     headers:
       Authorization: "allow"
