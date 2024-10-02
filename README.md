@@ -2,6 +2,20 @@
 
 <img src="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/raw/main/screenshots/custom-auth-workflow.png" width="100%" />
 
+<h4 align="center">AWS Lambda Authorizer | API Versioning & Testing | Infrastructure by Terraform </h4>
+
+<p align="center">
+  <a href="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/commits/main">
+  <img src="https://img.shields.io/github/last-commit/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions.svg?style=flat-square&logo=github&logoColor=white" alt="GitHub last commit">
+  <a href="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/issues">
+  <img src="https://img.shields.io/github/issues-raw/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions.svg?style=flat-square&logo=github&logoColor=white" alt="GitHub issues">
+  <a href="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/pulls">
+  <img src="https://img.shields.io/github/issues-pr-raw/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions.svg?style=flat-square&logo=github&logoColor=white" alt="GitHub pull requests">
+  <a href="https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions/blob/main/LICENSE">
+    <img src="https://img.shields.io/badge/license-MIT-brightgreen.svg">
+  </a>
+</p>
+
 1. [Core Features](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#core-features)
 2. [API Documentation](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#api-documentation)
 3. [AWS Lambda Authorization workflow](https://github.com/juanroldan1989/terraform-with-rest-api-gateway-and-lambda-functions#aws-lambda-authorization-worfklow)
